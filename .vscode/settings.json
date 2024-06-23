@@ -3,5 +3,8 @@
     "codegen",
     "tailwindcss",
     "typecheck"
-  ]
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    "\"((?:[^\"\\\\]|\\\\.)*?)\"",
+  ],
 }
