@@ -20,9 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,
-
-    /* For hoisting types */
-    "baseUrl": "src"
   },
   "include": ["src"]
 }

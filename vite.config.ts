@@ -20,6 +20,10 @@ export default defineConfig({
   },
   plugins: [
     externalizeDeps(),
-    dts({ tsconfigPath: "tsconfig.lib.json", rollupTypes: true }),
+    dts({
+      tsconfigPath: "tsconfig.lib.json",
+      compilerOptions: { baseUrl: "src" },
+      rollupTypes: true,
+    }),
   ],
 });

@@ -1,10 +1,10 @@
-import type { Layer } from "options";
 import {
   stringifyId,
   type TailwindModuleId,
   type TailwindModuleIdModuleJS,
   type TailwindModuleIdTop,
 } from "../id";
+import type { Layer } from "../options";
 import { type PluginContext } from "../utils";
 import type { CodegenContext } from "./context";
 import { getFilteredModuleImports } from "./utils";
