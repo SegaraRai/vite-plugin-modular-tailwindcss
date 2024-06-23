@@ -1,6 +1,7 @@
-import { normalizePath, type Plugin } from "vite";
+import type { Plugin } from "vite";
 import { parseId, resolveId, resolveIdFromURL } from "../id";
 import { resolveOptions, type Options } from "../options";
+import { getModuleIdFromURLPath, getURLPathFromModuleId } from "../utils";
 
 const GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
 
@@ -33,24 +34,8 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
         (async (): Promise<void> => {
           const resolvedId = await resolveIdFromURL(
             req.url ?? "",
-            async (path: string): Promise<string> => {
-              const possiblePaths =
-                !path || path === "/"
-                  ? ["/index.html"]
-                  : [path, path + ".html", "/index.html"];
-
-              for (const possiblePath of possiblePaths) {
-                let mod = await server.moduleGraph.getModuleByUrl(possiblePath);
-                if (mod) {
-                  if (!mod.id) {
-                    throw new Error(`Module id not set: ${possiblePath}`);
-                  }
-                  return mod.id;
-                }
-              }
-
-              throw new Error(`Module not found: ${path}`);
-            }
+            (path: string): Promise<string> =>
+              getModuleIdFromURLPath(path, server.moduleGraph)
           );
           if (!resolvedId) {
             next();
@@ -58,11 +43,13 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
           }
 
           res.statusCode = 302;
-          res.setHeader("Location", `/@id/${normalizePath(resolvedId)}`); // Not sure if this is the correct path
+          res.setHeader("Location", getURLPathFromModuleId(resolvedId));
           res.end();
         })().catch((err): void => {
           console.error(err);
+
           res.statusCode = 500;
+          res.setHeader("Content-Type", "text/plain");
           res.end("Internal Server Error");
         });
       });
