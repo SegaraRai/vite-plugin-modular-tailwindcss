@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secondary Page</title>
+    <script type="module" src="?tailwindcss/inject-shallow"></script>
+    <script type="module" src="/src/components/my-search-button.ts"></script>
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
+  <body>
+    <div class="w-full flex flex-col gap-8 items-center justify-center">
+      <my-search-button>Secondary Search Button</my-search-button>
+      <a
+        href="/"
+        class="text-green-400 hover:text-green-500 active:text-green-600"
+      >
+        Home
+      </a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modular TailwindCSS Plugin Playground with Lit</title>
+    <script type="module" src="?tailwindcss/inject-shallow"></script>
+    <script type="module" src="/src/components/index.ts"></script>
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
+  <body>
+    <div class="flex flex-col gap-8 px-20">
+      <my-menu-button>Menu Button</my-menu-button>
+      <my-search-button>Search Button</my-search-button>
+      <a
+        href="/secondary"
+        class="text-green-400 hover:text-green-500 active:text-green-600"
+      >
+        Secondary Page
+      </a>
+    </div>
+  </body>
+</html>
