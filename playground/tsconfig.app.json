@@ -7,6 +7,7 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "checkJs": true,
+    "types": [],
 
     /* Bundler mode */
     "moduleResolution": "Bundler",

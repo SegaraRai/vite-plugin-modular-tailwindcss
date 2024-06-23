@@ -1,8 +1,18 @@
+import { env } from "node:process";
 import { defineConfig } from "vite";
-//import { modularTailwindCSSPlugin } from "vite-plugin-modular-tailwindcss";
-import { modularTailwindCSSPlugin } from "../src/index";
+import modularTailwindCSSPluginPrebuilt from "vite-plugin-modular-tailwindcss";
+import modularTailwindCSSPluginDev from "../src/index";
 
-// Dev Note: Import `../src/index` instead of `vite-plugin-modular-tailwindcss` to test without building the package.
+const usePrebuilt =
+  !!env.CI || env.NODE_ENV === "test" || env.MTW_PLUGIN === "prebuilt";
+
+const modularTailwindCSSPlugin = usePrebuilt
+  ? modularTailwindCSSPluginPrebuilt
+  : modularTailwindCSSPluginDev;
+
+console.info(
+  `[playground] Using ${usePrebuilt ? "prebuilt" : "development"} version of the plugin`
+);
 
 export default defineConfig({
   build: {
