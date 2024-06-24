@@ -3,7 +3,7 @@ import { parseId, resolveId, resolveIdFromURL } from "../id";
 import { resolveOptions, type Options } from "../options";
 import { getModuleIdFromURLPath, getURLPathFromModuleId } from "../utils";
 
-const GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
+const DEV_GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
 
 /**
  * An alternative TailwindCSS plugin for server mode.
@@ -64,7 +64,7 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
           );
         }
 
-        if (source.startsWith(GLOBAL_TAILWIND_CSS_ID)) {
+        if (source.startsWith(DEV_GLOBAL_TAILWIND_CSS_ID)) {
           return source;
         }
         return resolveId(source, importer);
@@ -73,7 +73,7 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
     load: {
       order: "pre",
       async handler(resolvedId) {
-        if (resolvedId.startsWith(GLOBAL_TAILWIND_CSS_ID)) {
+        if (resolvedId.startsWith(DEV_GLOBAL_TAILWIND_CSS_ID)) {
           return {
             code: globalCSSCode,
             moduleSideEffects: false,
@@ -93,12 +93,12 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
 
         if (parsedId.inject) {
           return {
-            code: `import ${JSON.stringify(GLOBAL_TAILWIND_CSS_ID)};\n`,
+            code: `import ${JSON.stringify(DEV_GLOBAL_TAILWIND_CSS_ID)};\n`,
             moduleSideEffects: true,
           };
         } else {
           return {
-            code: `import code from ${JSON.stringify(GLOBAL_TAILWIND_CSS_ID + "?inline")};\nexport default code;\n`,
+            code: `import code from ${JSON.stringify(DEV_GLOBAL_TAILWIND_CSS_ID + "?inline")};\nexport default code;\n`,
             moduleSideEffects: false,
           };
         }
