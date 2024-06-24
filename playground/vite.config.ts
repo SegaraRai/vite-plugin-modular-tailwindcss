@@ -35,7 +35,7 @@ export default defineConfig({
           code: "@tailwind base;",
         },
         {
-          mode: "hoist",
+          mode: "hoisted",
           code: "@tailwind components;",
         },
         {

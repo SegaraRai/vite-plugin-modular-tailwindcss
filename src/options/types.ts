@@ -1,6 +1,6 @@
 export type ContentSpec = string | { raw: string; extension: string };
 
-export type LayerMode = "global" | "hoist" | "module";
+export type LayerMode = "global" | "hoisted" | "module";
 
 export interface LayerBase {
   mode: LayerMode;
@@ -14,15 +14,15 @@ export interface LayerGlobal extends LayerBase {
   content?: readonly ContentSpec[];
 }
 
-export interface LayerHoist extends LayerBase {
-  mode: "hoist";
+export interface LayerHoisted extends LayerBase {
+  mode: "hoisted";
 }
 
 export interface LayerModule extends LayerBase {
   mode: "module";
 }
 
-export type Layer = LayerGlobal | LayerHoist | LayerModule;
+export type Layer = LayerGlobal | LayerHoisted | LayerModule;
 
 export type ExcludeSpec =
   | string

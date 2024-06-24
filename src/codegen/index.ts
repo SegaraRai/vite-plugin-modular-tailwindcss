@@ -85,7 +85,7 @@ export async function generateCode(
 
       // Hoist all dependencies and generate the code
       // Since CSS processing order prevents direct hoisting, we create "raw" files for each CSS file and hoist them instead.
-      const layer = getLayer(layers, parsedId.layerIndex, "hoist");
+      const layer = getLayer(layers, parsedId.layerIndex, "hoisted");
       const hoistedCode = await generateHoistedCSSRawCode(
         ctx,
         parsedId,

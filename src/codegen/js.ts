@@ -59,7 +59,7 @@ export async function generateTopJSCode(
         );
         break;
 
-      case "hoist":
+      case "hoisted":
         await addImport(
           { mode: "hoisted", ext: "css", layerIndex, source, shallow },
           `l${layerIndex}h`

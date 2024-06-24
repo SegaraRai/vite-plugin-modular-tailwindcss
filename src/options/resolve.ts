@@ -8,7 +8,7 @@ const DEFAULT_LAYERS = [
     code: "@tailwind base;",
   },
   {
-    mode: "hoist",
+    mode: "hoisted",
     code: "@tailwind components;",
   },
   {
