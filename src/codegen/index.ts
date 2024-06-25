@@ -1,10 +1,10 @@
-import { stringifyId, type TailwindModuleId } from "../id";
-import type { Layer, LayerMode } from "../options";
+import type { TailwindModuleId } from "../id";
+import type { ContentSpec, Layer, LayerMode } from "../options";
 import type { createTailwindCSSGenerator } from "../tailwind";
-import { getModuleCode, type PluginContext } from "../utils";
+import type { PluginContext } from "../utils";
 import type { CodegenContext } from "./context";
-import { generateHoistedCSSRawCode, jsToRaw, rawToJS } from "./css";
 import { generateModuleJSCode, generateTopJSCode } from "./js";
+import { getFilteredModuleImportsRecursive } from "./utils";
 
 export * from "./context";
 
@@ -71,33 +71,28 @@ export async function generateCode(
     }
 
     case "hoisted": {
-      if (parsedId.ext === "css") {
-        // Redirect to raw code
-        const selfRawCode = jsToRaw(
-          await getModuleCode(
-            ctx,
-            stringifyId({ ...parsedId, ext: "raw" }, false),
-            stringifyId(parsedId, false)
-          )
-        );
-        return [selfRawCode, false];
-      }
-
-      // Hoist all dependencies and generate the code
-      // Since CSS processing order prevents direct hoisting, we create "raw" files for each CSS file and hoist them instead.
+      // Resolves the dependency graph and generates the hoisted CSS code.
       const layer = getLayer(layers, parsedId.layerIndex, "hoisted");
-      const hoistedCode = await generateHoistedCSSRawCode(
-        ctx,
-        parsedId,
-        codegenContext
+      const referencedContents: ContentSpec[] = [];
+      const referencedIds = parsedId.shallow
+        ? [parsedId.source]
+        : await getFilteredModuleImportsRecursive(
+            ctx,
+            parsedId.source,
+            codegenContext.shouldIncludeImport
+          );
+      for (const id of referencedIds) {
+        referencedContents.push({
+          raw: await getTailwindCSSContent(id),
+          extension: getExtension(id),
+        });
+      }
+      const allCode = await generateTailwindCSS(
+        layer.mode,
+        layer.code,
+        referencedContents
       );
-      const selfCode = await generateTailwindCSS(layer.mode, layer.code, [
-        {
-          raw: await getTailwindCSSContent(parsedId.source),
-          extension: getExtension(parsedId.source),
-        },
-      ]);
-      return [rawToJS(hoistedCode + selfCode), false];
+      return [allCode, false];
     }
 
     case "global": {

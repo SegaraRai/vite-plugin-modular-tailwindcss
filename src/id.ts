@@ -16,7 +16,7 @@ export interface TailwindModuleIdGlobal {
 
 export interface TailwindModuleIdHoisted {
   readonly mode: "hoisted";
-  readonly ext: "css" | "raw";
+  readonly ext: "css";
   readonly layerIndex: number;
   readonly shallow: boolean;
   readonly source: string;
@@ -194,7 +194,7 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
 
   switch (mode) {
     case "hoisted":
-      if (extension === "css" || extension === "raw") {
+      if (extension === "css") {
         return {
           mode: "hoisted",
           ext: extension,
@@ -204,7 +204,7 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
         };
       }
 
-      throw new Error(`LogicError: Hoisted layers must be CSS or raw files`);
+      throw new Error(`LogicError: Hoisted layers must be a CSS file`);
 
     case "module":
       if (extension === "js") {
@@ -231,7 +231,7 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
         };
       }
 
-      throw new Error(`LogicError: Module layers must be CSS or JS files`);
+      throw new Error(`LogicError: Module layers must be a CSS or JS file`);
   }
 }
 
@@ -250,10 +250,7 @@ export function stringifyId(id: TailwindModuleId, inject: boolean): string {
       return `${prefix}index${id.shallow ? ".shallow" : ""}${!inject ? ".inline" : ".inject"}.js`;
 
     case "hoisted":
-      if (id.ext === "raw" && inject) {
-        throw new Error(`LogicError: Cannot inject raw hoisted layers`);
-      }
-      return `${prefix}hoisted.layer${id.layerIndex}${id.shallow ? ".shallow" : ""}.${id.ext}${id.ext === "css" && !inject ? "?inline" : ""}`;
+      return `${prefix}hoisted.layer${id.layerIndex}${id.shallow ? ".shallow" : ""}.css${!inject ? "?inline" : ""}`;
 
     case "module":
       if (id.ext === "js" && inject !== id.inject) {
