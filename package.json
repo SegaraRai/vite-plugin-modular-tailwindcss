@@ -2,10 +2,15 @@
   "name": "vite-plugin-modular-tailwindcss",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
+  "author": {
+    "name": "SegaraRai"
+  },
+  "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
+  "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
