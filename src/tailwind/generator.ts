@@ -11,7 +11,8 @@ import type { ContentSpec, LayerMode } from "../options";
 import type { PluginContext } from "../utils";
 
 const { loadPostcss } = pkgDeps;
-const { default: tailwind } = pkgTailwind;
+const tailwind =
+  typeof pkgTailwind === "function" ? pkgTailwind : pkgTailwind.default;
 
 export function createTailwindCSSGenerator(
   ctx: PluginContext,
