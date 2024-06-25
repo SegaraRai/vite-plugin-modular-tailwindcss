@@ -14,8 +14,8 @@ const toMatchImageSnapshot = configureToMatchImageSnapshot({
   customSnapshotsDir: fileURLToPath(
     new URL("./__image_snapshots__", import.meta.url)
   ),
-  failureThresholdType: "percent",
-  failureThreshold: 0.01,
+  failureThresholdType: "pixel",
+  failureThreshold: 10,
 });
 expect.extend({ toMatchImageSnapshot });
 
