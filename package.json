@@ -28,14 +28,19 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "lint": "eslint . && prettier -c .",
     "test": "vitest"
   },
   "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.14.8",
     "@vitest/ui": "^1.6.0",
+    "eslint": "^9.5.0",
     "prettier": "^3.3.2",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.5.2",
+    "typescript-eslint": "8.0.0-alpha.33",
     "vite": "^5.3.1",
     "vite-plugin-dts": "^3.9.1",
     "vite-plugin-externalize-deps": "^0.8.0",

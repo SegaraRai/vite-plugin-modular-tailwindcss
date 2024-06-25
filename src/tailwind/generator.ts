@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // Heavily using the internals of Tailwind CSS to generate the CSS, very hacky.
 // Core code is from Tailwind CSS CLI (MIT License): https://github.com/tailwindlabs/tailwindcss/blob/v3.4.4/src/cli/build/plugin.js
 

@@ -43,7 +43,7 @@ export function createDefaultLayers(globalContent: string = ""): Layer[] {
 const DEFAULT_HEAD = '<script type="module" src="/test/entry.js"></script>';
 const DEFAULT_TEST_OPTIONS: TestOptions = {
   layers: createDefaultLayers(),
-  configPath: fromProjectRoot("./tests/test-tailwind-config.js"),
+  configPath: fromProjectRoot("./tests/test-tailwind-config.cjs"),
   head: DEFAULT_HEAD,
   globCWD: fromProjectRoot("./tests"),
 };

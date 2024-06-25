@@ -5,9 +5,7 @@
       "name": "Playground Vite Build",
       "type": "node-terminal",
       "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "cwd": "${workspaceFolder}/playground",
       "command": "pnpm vite build"
     }

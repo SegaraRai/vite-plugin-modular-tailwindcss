@@ -19,10 +19,7 @@ console.log(X, a, css);
 export default b + " test-u-2 test-c-2 test-b-2";
 `,
       ],
-      [
-        "b.js",
-        `export default "test-u-3 test-c-3 test-b-3";\n`,
-      ],
+      ["b.js", `export default "test-u-3 test-c-3 test-b-3";\n`],
     ],
     {
       layers: createDefaultLayers('"test-b-1"'),
@@ -138,10 +135,7 @@ console.log(X, a, css);
 export default b + " test-u-2 test-c-2 test-b-2";
 `,
       ],
-      [
-        "b.js",
-        `export default "test-u-3 test-c-3 test-b-3";\n`,
-      ],
+      ["b.js", `export default "test-u-3 test-c-3 test-b-3";\n`],
     ],
     {
       layers: createDefaultLayers('"test-b-1"'),

@@ -48,6 +48,7 @@ export function resolveFilesystemContents(
       result.push(entry[1]);
     } catch (e) {
       ctx.warn(`Failed to read file: ${file}`);
+      ctx.warn(String(e));
     }
   }
 

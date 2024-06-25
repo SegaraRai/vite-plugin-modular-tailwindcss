@@ -15,24 +15,37 @@ console.log(a, b, css);
       "a.js",
       `import x from "./x.js";
 export default x + " test-c-1";
-`
+`,
     ],
     [
       "b.js",
       `import x from "./x.js";
 export default x + " test-c-2";
-`
+`,
     ],
-    [
-      "x.js",
-      `export default "test-c-9";\n`
-    ],
+    ["x.js", `export default "test-c-9";\n`],
   ]);
 
-  expect(result["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]).toContain(".test-c-1");
-  expect(result["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]).toContain(".test-c-2");
-  expect(result["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]).toMatch(/\.test-c-9/);
-  expect(result["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]).not.toMatch(/\.test-c-9.+\.test-c-9/);
+  expect(
+    result[
+      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
+    ]
+  ).toContain(".test-c-1");
+  expect(
+    result[
+      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
+    ]
+  ).toContain(".test-c-2");
+  expect(
+    result[
+      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
+    ]
+  ).toMatch(/\.test-c-9/);
+  expect(
+    result[
+      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
+    ]
+  ).not.toMatch(/\.test-c-9.+\.test-c-9/);
 
   expect(result).toMatchInlineSnapshot(`
     {

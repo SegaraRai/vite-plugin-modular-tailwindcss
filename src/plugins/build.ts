@@ -6,6 +6,7 @@ import { createTailwindCSSGenerator } from "../tailwind";
 import { getModuleCode, shouldExclude, type PluginContext } from "../utils";
 
 // for documentation links
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { modularTailwindCSSPluginServe } from "./serve";
 
 function createStore(ctx: PluginContext, options: Options) {

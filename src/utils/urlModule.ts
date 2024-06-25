@@ -10,7 +10,7 @@ export async function getModuleIdFromURLPath(
       : [path, path + ".html", "/index.html"];
 
   for (const possiblePath of possiblePaths) {
-    let mod = await moduleGraph.getModuleByUrl(possiblePath);
+    const mod = await moduleGraph.getModuleByUrl(possiblePath);
     if (mod) {
       if (!mod.id) {
         throw new Error(`Module id not set: ${possiblePath}`);
