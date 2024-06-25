@@ -88,7 +88,11 @@ export function createTailwindCSSGenerator(
       content,
       globCWD,
     };
-    const result = await processor.process(css, { map: false });
+    const result = await processor.process(css, {
+      from: undefined,
+      to: undefined,
+      map: false,
+    });
     gCurrentContext = undefined;
 
     let resultCode = result.css.trim();
