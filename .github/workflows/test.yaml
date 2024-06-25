@@ -30,7 +30,7 @@ jobs:
       - name: Get Playwright version
         run: |
           cd playground
-          PLAYWRIGHT_VERSION=$(pnpm why @playwright/test | grep @playwright | sed 's/.*@//')
+          PLAYWRIGHT_VERSION=$(pnpm why @playwright/test | grep @playwright | sed 's/.* //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 
@@ -51,6 +51,10 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      # This step is required to pass type-checking
+      - name: Prebuild
+        run: pnpm vite build
 
       - name: Build
         run: pnpm build
