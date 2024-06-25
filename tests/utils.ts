@@ -45,6 +45,7 @@ const DEFAULT_TEST_OPTIONS: TestOptions = {
   layers: createDefaultLayers(),
   configPath: fromProjectRoot("./tests/test-tailwind-config.js"),
   head: DEFAULT_HEAD,
+  globCWD: fromProjectRoot("./tests"),
 };
 
 export function getDefaultHead(): string {

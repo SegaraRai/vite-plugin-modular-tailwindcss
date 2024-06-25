@@ -10,7 +10,7 @@ it("supports filesystem content", async ({ expect }) => {
         {
           mode: "global",
           code: "@tailwind base;",
-          content: ["tests/fs-test-contents/*.ts"],
+          content: ["./fs-test-contents/*.ts"],
         },
       ],
     }
@@ -21,7 +21,40 @@ it("supports filesystem content", async ({ expect }) => {
   expect(code).toContain(".test-b-2");
   expect(code).toContain(".test-b-3");
   expect(code).toContain(".test-b-4");
-  expect(code).not.toContain(".test-b-4");
+  expect(code).not.toContain(".test-b-5");
 
-  expect(result).toMatchInlineSnapshot();
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "[intermediate] tailwindcss.global.layer0.css": "",
+      "[intermediate] tailwindcss:test/entry.js::index.inject.js": "import "tailwindcss.global.layer0.css";
+    ",
+      "[output] _virtual/entry.js": "/* empty css                              */
+    ",
+      "[output] _virtual/tailwindcss.global.layer0.css": ".test-b-2 {
+        --test-b: 2px
+    }
+    .test-b-3 {
+        --test-b: 3px
+    }
+    .test-b-4 {
+        --test-b: 4px
+    }
+    /* TailwindCSS Base */
+    /* TailwindCSS Base Backdrop */
+    ",
+      "[output] tests/entry.html": "<!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
+      <script type="module" crossorigin src="/_virtual/entry.js"></script>
+      <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
+    </head>
+      <body>
+        Only for testing purposes.
+      </body>
+    </html>
+    ",
+    }
+  `);
 });

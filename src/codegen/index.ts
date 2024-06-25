@@ -38,7 +38,7 @@ export async function generateCode(
   getTailwindCSSContent: (sourceId: string) => Promise<string>
 ): Promise<[code: string, hasSideEffects: boolean]> {
   const { mode } = parsedId;
-  const { layers } = codegenContext.options;
+  const { layers, globCWD } = codegenContext.options;
 
   switch (mode) {
     case "top": {
@@ -61,12 +61,18 @@ export async function generateCode(
       }
 
       const layer = getLayer(layers, parsedId.layerIndex, "module");
-      const selfCode = await generateTailwindCSS(layer.mode, layer.code, [
+      const content: ContentSpec[] = [
         {
           raw: await getTailwindCSSContent(parsedId.source),
           extension: getExtension(parsedId.source),
         },
-      ]);
+      ];
+      const selfCode = await generateTailwindCSS(
+        layer.mode,
+        layer.code,
+        content,
+        globCWD
+      );
       return [selfCode, false];
     }
 
@@ -90,7 +96,8 @@ export async function generateCode(
       const allCode = await generateTailwindCSS(
         layer.mode,
         layer.code,
-        referencedContents
+        referencedContents,
+        globCWD
       );
       return [allCode, false];
     }
@@ -100,7 +107,8 @@ export async function generateCode(
       const globalCode = await generateTailwindCSS(
         layer.mode,
         layer.code,
-        layer.content ?? null
+        layer.content ?? null,
+        globCWD
       );
       return [globalCode, false];
     }

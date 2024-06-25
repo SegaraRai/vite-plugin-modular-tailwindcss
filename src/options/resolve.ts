@@ -22,5 +22,6 @@ export function resolveOptions(options: Options): ResolvedOptions {
     excludes: options.excludes ?? [...DEFAULT_EXCLUDES],
     layers: options.layers ?? JSON.parse(JSON.stringify(DEFAULT_LAYERS)),
     configPath: options.configPath ?? resolveDefaultTailwindConfigPath(),
+    globCWD: options.globCWD ?? process.cwd(),
   };
 }
