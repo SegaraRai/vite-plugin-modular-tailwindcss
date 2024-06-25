@@ -1,5 +1,5 @@
 import { build, normalizePath } from "vite";
-import { modularTailwindCSSPluginBuild } from "../src";
+import { loadPlugin } from "./loadPlugin";
 import type { TestCase, TestOptions, TestResult } from "./types";
 import { getDefaultTestOptions, redactProjectRoot } from "./utils";
 
@@ -19,6 +19,8 @@ export async function runBuild(
   testCase: TestCase,
   options: TestOptions = {}
 ): Promise<TestResult> {
+  const { modularTailwindCSSPluginBuild } = await loadPlugin();
+
   const resolvedOptions = {
     ...getDefaultTestOptions(),
     ...options,
