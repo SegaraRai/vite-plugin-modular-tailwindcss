@@ -13,13 +13,15 @@
     "test:server-preview": "vite preview --port 5188",
     "test:dev": "cross-env MTW_PLUGIN=development start-server-and-test \"pnpm test:server-dev\" http://localhost:5188 \"pnpm test:vitest-run\"",
     "test:preview": "cross-env MTW_PLUGIN=prebuilt start-server-and-test \"pnpm test:server-preview\" http://localhost:5188 \"pnpm test:vitest-run\"",
-    "test": "pnpm test:dev && pnpm test:preview"
+    "test": "pnpm test:dev && pnpm test:preview",
+    "test:update": "cross-env MTW_PLUGIN=development start-server-and-test \"pnpm test:server-dev\" http://localhost:5188 \"pnpm test:vitest-run -u\""
   },
   "dependencies": {
     "lit": "^3.1.4"
   },
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.8.1",
+    "@fontsource/inter": "^5.0.18",
     "@iconify-json/zondicons": "^1.1.8",
     "@playwright/test": "^1.45.0",
     "@types/jest-image-snapshot": "^6.4.0",
