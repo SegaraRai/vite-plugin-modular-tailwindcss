@@ -1,0 +1,72 @@
+name: Test on push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+
+      - name: Cache dependencies
+        uses: actions/setup-node@v4
+        with:
+          # `actions/setup-node` can be configured to not set up Node.js by omitting the `node-version` field
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Get Playwright version
+        run: |
+          PLAYWRIGHT_VERSION=$(pnpm why @playwright/test | grep @playwright | sed 's/.*@//')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+      - name: Cache Playwright browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright with dependencies
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: pnpm playwright install --with-deps
+
+      - name: Install Playwright dependencies
+        if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
+        run: pnpm playwright install-deps
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
+
+      - name: Playground Lint
+        run: cd playground && pnpm lint
+
+      - name: Playground Test
+        run: cd playground && pnpm test
+
+      - name: Upload diffs if VRT failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: VRT diffs
+          path: playground/tests/__image_snapshots__/__diff_output__
+          retention-days: 7
