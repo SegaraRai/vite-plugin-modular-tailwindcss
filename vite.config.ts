@@ -1,6 +1,6 @@
-import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   build: {
@@ -26,4 +26,7 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
+  test: {
+    include: ["tests/**/*.test.ts"],
+  },
 });
