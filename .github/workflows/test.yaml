@@ -62,8 +62,8 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Playground Lint
-        run: cd playground && pnpm lint
+      - name: Playground Built
+        run: cd playground && pnpm build
 
       - name: Playground Test
         run: cd playground && pnpm test

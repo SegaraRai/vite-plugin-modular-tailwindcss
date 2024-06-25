@@ -10,7 +10,7 @@
     "typecheck": "tsc -b && lit-analyzer",
     "test:vitest-run": "vitest run",
     "test:server-dev": "vite dev --port 5188",
-    "test:server-preview": "vite build && vite preview --port 5188",
+    "test:server-preview": "vite preview --port 5188",
     "test:dev": "cross-env MTW_PLUGIN=development start-server-and-test \"pnpm test:server-dev\" http://localhost:5188 \"pnpm test:vitest-run\"",
     "test:preview": "cross-env MTW_PLUGIN=prebuilt start-server-and-test \"pnpm test:server-preview\" http://localhost:5188 \"pnpm test:vitest-run\"",
     "test": "pnpm test:dev && pnpm test:preview"
