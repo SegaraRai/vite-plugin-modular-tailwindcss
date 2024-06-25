@@ -218,7 +218,7 @@ export default "test-u-2 test-c-2 test-b-2";
     import "tailwindcss:\\u0000test/entry.js::module.layer2.css";
     ",
       "[output] _virtual/a.js": "import "./b.js";
-    const a = " test-u-2 test-c-2 test-b-2";
+    const a = "test-u-2 test-c-2 test-b-2";
     export {
       a as default
     };
