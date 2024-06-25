@@ -29,7 +29,7 @@ function createImportCodegen(inject: boolean) {
   const getImportCode = (): string => importCodes.join("");
 
   const getExportCode = (): string =>
-    inject ? "" : `export default ${vars.join(" + ") || '""'};`;
+    inject ? "" : `export default ${vars.join(" + ") || '""'};\n`;
 
   return {
     addImport,
