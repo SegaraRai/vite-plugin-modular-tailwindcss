@@ -62,7 +62,7 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Playground Built
+      - name: Playground Build
         run: cd playground && pnpm build
 
       - name: Playground Test

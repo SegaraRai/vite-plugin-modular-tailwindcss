@@ -33,7 +33,16 @@ export default defineConfig({
       layers: [
         {
           mode: "global",
-          code: "@tailwind base;",
+          code: `
+@tailwind base;
+
+*, ::before, ::after {
+  font-synthesis: none !important;
+  text-rendering: geometricPrecision !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+`,
         },
         {
           mode: "hoisted",

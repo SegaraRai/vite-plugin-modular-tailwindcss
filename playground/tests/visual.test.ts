@@ -23,9 +23,19 @@ let browser: Browser;
 let context: BrowserContext;
 let page: Page;
 beforeAll(async () => {
-  browser = await chromium.launch();
+  browser = await chromium.launch({
+    args: [
+      "--disable-gpu",
+      "--disable-font-subpixel-positioning",
+      "--disable-lcd-text",
+      "--font-render-hinting=none",
+      "--enable-font-antialiasing",
+      "--force-color-profile=srgb",
+    ],
+  });
   context = await browser.newContext();
   page = await context.newPage();
+  await page.setViewportSize({ width: 640, height: 360 });
 });
 
 afterAll(async () => {
