@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2021",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["ES2020"],
+    "lib": ["ES2021"],
     "skipLibCheck": true,
     "checkJs": true,
 
@@ -21,5 +21,5 @@
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }
