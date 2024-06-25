@@ -1,9 +1,9 @@
-import { normalizePath, type ModuleGraph } from "vite";
+import { normalizePath, type ModuleGraph, type ResolvedConfig } from "vite";
 
 export async function getModuleIdFromURLPath(
   path: string,
   moduleGraph: ModuleGraph
-): Promise<string> {
+): Promise<string | null> {
   const possiblePaths =
     !path || path === "/"
       ? ["/index.html"]
@@ -19,10 +19,14 @@ export async function getModuleIdFromURLPath(
     }
   }
 
-  throw new Error(`Module not found: ${path}`);
+  return null;
 }
 
 export function getURLPathFromModuleId(resolvedId: string): string {
   // Not sure if this is correct
   return `/@id/${normalizePath(resolvedId)}`;
+}
+
+export function getIndexHTMLModuleId(config: ResolvedConfig): string {
+  return config.root + "/index.html";
 }

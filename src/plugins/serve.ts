@@ -1,7 +1,11 @@
-import type { Plugin } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 import { parseId, resolveId, resolveIdFromURL } from "../id";
 import { resolveOptions, type Options } from "../options";
-import { getModuleIdFromURLPath, getURLPathFromModuleId } from "../utils";
+import {
+  getIndexHTMLModuleId,
+  getModuleIdFromURLPath,
+  getURLPathFromModuleId,
+} from "../utils";
 
 const DEV_GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
 
@@ -24,18 +28,25 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
     .join("");
 
   let seenFirstMessage = false;
+  let resolvedConfig: ResolvedConfig | undefined;
 
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
     apply: "serve",
+    configResolved(config): void {
+      resolvedConfig = config;
+    },
     configureServer(server): void {
       // Redirect to enable importing `?tailwindcss/inject` and `?tailwindcss/inject-shallow` from HTML.
       server.middlewares.use((req, res, next): void => {
         (async (): Promise<void> => {
           const resolvedId = await resolveIdFromURL(
             req.url ?? "",
-            (path: string): Promise<string> =>
-              getModuleIdFromURLPath(path, server.moduleGraph)
+            async (path: string): Promise<string> =>
+              (await getModuleIdFromURLPath(path, server.moduleGraph)) ??
+              (await (resolvedConfig
+                ? getIndexHTMLModuleId(resolvedConfig)
+                : Promise.reject(new Error("No resolved config."))))
           );
           if (!resolvedId) {
             next();
