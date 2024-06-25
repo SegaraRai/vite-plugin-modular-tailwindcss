@@ -14,7 +14,7 @@ function createStore(ctx: PluginContext, options: Options) {
   const codegenContext: CodegenContext = {
     options: resolvedOptions,
     shouldIncludeImport: (resolvedId: string, importerId: string): boolean =>
-      !resolvedId.startsWith("\0") && // "\0vite/" prefix
+      !resolvedId.startsWith("\0vite/") &&
       !isOurId(resolvedId) &&
       !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),
   };
@@ -87,8 +87,8 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
           generateTailwindCSS,
           (layer) => layer.apply === "serve",
           async (sourceId): Promise<string> => {
-            // In Rollup, HTML is treated as JS code that only imports referenced scripts and CSS.
-            // Therefore, we need to handle it differently to retrieve the actual HTML content.
+            // Vite forces Rollup to treat HTML as JS code that only imports scripts and CSS.
+            // Therefore we have to use `transformIndexHtml` hook to get the actual HTML content.
             const html = htmlMap.get(normalizePath(sourceId));
             if (html) {
               return html;
