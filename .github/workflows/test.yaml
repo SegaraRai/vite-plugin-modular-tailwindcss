@@ -1,4 +1,4 @@
-name: Test on push
+name: Test and Publish
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
