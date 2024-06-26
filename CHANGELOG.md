@@ -1,5 +1,11 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.1.2
+
+### Patch Changes
+
+- e6c0137: Fix tag not created
+
 ## 0.1.1
 
 ### Patch Changes
