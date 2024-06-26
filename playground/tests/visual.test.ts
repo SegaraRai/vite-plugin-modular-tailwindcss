@@ -27,7 +27,7 @@ test("secondary.html", async ({ page }) => {
   const link = await page.locator("a");
   await link.click();
 
-  await page.waitForURL("/secondary")
+  await page.waitForURL("/secondary");
 
   await expect(page).toHaveScreenshot();
 
