@@ -22,7 +22,12 @@ test("index.html", async ({ page }) => {
 });
 
 test("secondary.html", async ({ page }) => {
-  await page.goto("/secondary");
+  await page.goto("/");
+
+  const link = await page.locator("a");
+  await link.click();
+
+  await page.waitForURL("/secondary")
 
   await expect(page).toHaveScreenshot();
 
