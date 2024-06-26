@@ -1,57 +1,36 @@
-import {
-  chromium,
-  type Browser,
-  type BrowserContext,
-  type Page,
-} from "@playwright/test";
-import { configureToMatchImageSnapshot } from "jest-image-snapshot";
-import { fileURLToPath } from "node:url";
-import { afterAll, beforeAll, it, expect } from "vitest";
+import { expect, test } from "@playwright/test";
 
-const ORIGIN = "http://localhost:5188";
+test("index.html", async ({ page }) => {
+  await page.goto("/");
 
-const toMatchImageSnapshot = configureToMatchImageSnapshot({
-  customSnapshotsDir: fileURLToPath(
-    new URL("./__image_snapshots__", import.meta.url)
-  ),
-  failureThresholdType: "pixel",
-  failureThreshold: 10,
-});
-expect.extend({ toMatchImageSnapshot });
+  await expect(page).toHaveScreenshot();
 
-let browser: Browser;
-let context: BrowserContext;
-let page: Page;
-beforeAll(async () => {
-  browser = await chromium.launch({
-    args: [
-      "--disable-gpu",
-      "--disable-font-subpixel-positioning",
-      "--disable-lcd-text",
-      "--font-render-hinting=none",
-      "--enable-font-antialiasing",
-      "--force-color-profile=srgb",
-    ],
-  });
-  context = await browser.newContext();
-  page = await context.newPage();
-  await page.setViewportSize({ width: 640, height: 360 });
+  const menuButton = await page.locator("my-menu-button");
+  const searchButton = await page.locator("my-search-button");
+
+  await menuButton.hover();
+  await expect(page).toHaveScreenshot();
+
+  await menuButton.click();
+  await expect(page).toHaveScreenshot();
+
+  await searchButton.hover();
+  await expect(page).toHaveScreenshot();
+
+  await searchButton.click();
+  await expect(page).toHaveScreenshot();
 });
 
-afterAll(async () => {
-  await browser.close();
-});
+test("secondary.html", async ({ page }) => {
+  await page.goto("/secondary");
 
-it("index.html", async () => {
-  await page.goto(`${ORIGIN}/`);
+  await expect(page).toHaveScreenshot();
 
-  const image = await page.screenshot();
-  expect(image).toMatchImageSnapshot();
-});
+  const searchButton = await page.locator("my-search-button");
 
-it("secondary.html", async () => {
-  await page.goto(`${ORIGIN}/secondary`);
+  await searchButton.hover();
+  await expect(page).toHaveScreenshot();
 
-  const image = await page.screenshot();
-  expect(image).toMatchImageSnapshot();
+  await searchButton.click();
+  await expect(page).toHaveScreenshot();
 });

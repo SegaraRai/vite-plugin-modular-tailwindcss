@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-__diff_output__
+test-results
 
 # Editor directories and files
 .idea

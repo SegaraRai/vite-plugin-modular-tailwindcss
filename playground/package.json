@@ -8,13 +8,9 @@
     "build": "pnpm typecheck && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b && lit-analyzer",
-    "test:vitest-run": "vitest run",
-    "test:server-dev": "vite dev --port 5188",
-    "test:server-preview": "vite preview --port 5188",
-    "test:dev": "cross-env MTW_PLUGIN=development start-server-and-test \"pnpm test:server-dev\" http://localhost:5188 \"pnpm test:vitest-run\"",
-    "test:preview": "cross-env MTW_PLUGIN=prebuilt start-server-and-test \"pnpm test:server-preview\" http://localhost:5188 \"pnpm test:vitest-run\"",
-    "test": "pnpm test:dev && pnpm test:preview",
-    "test:update": "pnpm build && cross-env MTW_PLUGIN=prebuilt start-server-and-test \"pnpm test:server-preview\" http://localhost:5188 \"pnpm test:vitest-run -u\""
+    "test:dev": "cross-env PLAYGROUND_ENV=development pnpm playwright test",
+    "test:preview": "cross-env PLAYGROUND_ENV=preview pnpm playwright test",
+    "test": "pnpm test:dev && pnpm test:preview"
   },
   "dependencies": {
     "lit": "^3.1.4"
@@ -24,17 +20,14 @@
     "@fontsource/inter": "^5.0.18",
     "@iconify-json/zondicons": "^1.1.8",
     "@playwright/test": "^1.45.0",
-    "@types/jest-image-snapshot": "^6.4.0",
     "@types/node": "^20.14.8",
     "autoprefixer": "^10.4.19",
     "cross-env": "^7.0.3",
-    "jest-image-snapshot": "^6.4.0",
     "lit-analyzer": "^2.0.3",
-    "start-server-and-test": "^2.0.4",
+    "playwright": "^1.45.0",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
-    "vite-plugin-modular-tailwindcss": "workspace:*",
-    "vitest": "^1.6.0"
+    "vite-plugin-modular-tailwindcss": "workspace:*"
   }
 }
