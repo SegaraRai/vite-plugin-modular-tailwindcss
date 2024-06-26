@@ -14,14 +14,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: ./playground
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
       - uses: moonrepo/setup-toolchain@v0
         with:
           auto-install: true
