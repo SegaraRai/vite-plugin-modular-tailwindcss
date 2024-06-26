@@ -1,14 +1,14 @@
 {
   "name": "vite-plugin-modular-tailwindcss",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.0.1",
   "author": {
     "name": "SegaraRai"
   },
   "license": "MIT",
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE",
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -32,6 +32,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.6",
     "@eslint/js": "^9.5.0",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.14.8",
