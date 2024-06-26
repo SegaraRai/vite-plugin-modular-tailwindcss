@@ -33,7 +33,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . && prettier -c .",
-    "test": "vitest"
+    "test": "vitest",
+    "tag": "tsx scripts/gitTag.ts"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.6",
@@ -44,6 +45,7 @@
     "eslint": "^9.5.0",
     "prettier": "^3.3.2",
     "tailwindcss": "^3.4.4",
+    "tsx": "^4.15.7",
     "typescript": "^5.5.2",
     "typescript-eslint": "8.0.0-alpha.33",
     "vite": "^5.3.1",
