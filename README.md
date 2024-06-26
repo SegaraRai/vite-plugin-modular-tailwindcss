@@ -26,21 +26,24 @@ This project provides a Vite plugin for integrating TailwindCSS in a modular fas
 
 ## Motivation
 
-TailwindCSS is a utility-first CSS framework that offers a wide range of utility classes for rapid prototyping and development.
-When building web components, it is essential to encapsulate styles within the component itself.
-Directly importing TailwindCSS into the component can lead to a bloated CSS file that includes styles for all components in the project.
-A more efficient approach is to generate TailwindCSS styles on a per-component basis, allowing for a modular and tree-shakable design.
-This plugin provides a solution for generating TailwindCSS styles in a modular manner, ideal for creating web components and UI libraries.
-To prevent duplication of common CSS like `@tailwind base;`, three aggregation levels (`global`, `hoist`, and `module`) can be set for each layer.
+TailwindCSS is a utility-first CSS framework that offers a vast array of utility classes for rapid prototyping and development.
+When creating web components, each component must include its own stylesheets as per the encapsulation specification.
+Directly importing TailwindCSS into components can result in a bloated CSS file that includes styles for all components in the project, leading to inefficiency.
+
+A more efficient approach is to generate TailwindCSS styles on a per-component basis.
+This method allows for a modular and tree-shakable design, optimizing performance and maintainability.
+This plugin addresses this need by enabling the generation of TailwindCSS styles in a modular manner, making it ideal for creating web components and UI libraries.
+
+To avoid duplication of common CSS such as @tailwind base;, the plugin supports three aggregation levels (global, hoist, and module) for each layer, ensuring efficient and organized style management.
 
 Prior Art: [UnoCSS shadow-dom mode](https://unocss.dev/integrations/vite#shadow-dom)
 
 ## Features
 
-- **Modular CSS Generation**: Generate TailwindCSS styles on a per-layer basis with different modes (`global`, `hoisted`, and `module`) for each layer.
-- **Layer-aware Hierarchical Design**: Prevents order-dependent issues by generating and combining CSS on a layer-by-layer basis.
-- **Optimized for Vite**: Supports minification and extraction of generated CSS into separate files.
-- **Flexible Configuration**: Easily configure the plugin to include or exclude specific files or directories, and define custom TailwindCSS layers and modes.
+- **Modular CSS Generation**: Generate TailwindCSS styles on a per-layer basis with three different modes (`global`, `hoisted`, and `module`), providing flexibility and efficiency.
+- **Layer-aware Hierarchical Design**: Prevents order-dependent issues by generating and combining CSS layer by layer, ensuring consistent and predictable styling.
+- **Optimized for Vite**: Supports minification and extraction of generated CSS into separate files, enhancing performance and maintainability.
+- **Flexible Configuration**: Easily configure the plugin to include or exclude specific files or directories, allowing for precise control over which components generate TailwindCSS styles.
 
 ## Installation
 
