@@ -1,0 +1,9 @@
+services:
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.45.0-jammy
+    ipc: host
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command: npx playwright run-server --port 5375
+    ports:
+      - 5375:5375

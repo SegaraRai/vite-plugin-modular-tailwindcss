@@ -10,7 +10,8 @@
     "typecheck": "tsc -b && lit-analyzer",
     "test:dev": "cross-env PLAYGROUND_ENV=development pnpm playwright test",
     "test:preview": "cross-env PLAYGROUND_ENV=preview pnpm playwright test",
-    "test": "pnpm test:dev && pnpm test:preview"
+    "test": "pnpm test:dev && pnpm test:preview",
+    "test:container": "cross-env PLAYWRIGHT_REMOTE_WS_ENDPOINT=ws://localhost:5375 PLAYWRIGHT_REMOTE_HOSTNAME=host.docker.internal pnpm test"
   },
   "dependencies": {
     "lit": "^3.1.4"
