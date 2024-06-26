@@ -5,6 +5,10 @@
     "name": "SegaraRai"
   },
   "license": "MIT",
+  "keywords": [
+    "tailwindcss",
+    "vite-plugin"
+  ],
   "files": [
     "dist",
     "LICENSE",
