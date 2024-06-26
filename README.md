@@ -2,6 +2,9 @@
 
 This project provides a Vite plugin for integrating TailwindCSS in a modular fashion, suitable for creating web components and UI libraries.
 
+[![npm](https://img.shields.io/npm/v/vite-plugin-modular-tailwindcss)](https://www.npmjs.com/package/vite-plugin-modular-tailwindcss)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/SegaraRai/vite-plugin-modular-tailwindcss/publish.yaml?branch=main)](https://github.com/SegaraRai/vite-plugin-modular-tailwindcss/actions/workflows/publish.yaml)
+
 ## Table of Contents
 
 1. [Motivation](#motivation)
