@@ -1,5 +1,11 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.1.1
+
+### Patch Changes
+
+- bc3d8f5: Add keywords to package.json
+
 ## 0.1.0
 
 ### Minor Changes
