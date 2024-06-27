@@ -22,10 +22,6 @@ export interface LayerModule extends LayerBase {
   mode: "module";
 }
 
-/**
- * A layer to generate. \
- * See {@link https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#layer-modes|Layer Modes} for details.
- */
 export type Layer = LayerGlobal | LayerHoisted | LayerModule;
 
 export type ExcludeSpec =
@@ -43,8 +39,9 @@ export interface Options {
    * The layers to generate. \
    * CSS will be loaded or concatenated in the order of the `layers` array.
    *
+   * See {@link https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#layer-modes|Layer Modes} for details.
+   *
    * @default
-   * ```ts
    * [
    *  {
    *    mode: "global",
@@ -58,14 +55,19 @@ export interface Options {
    *    mode: "module",
    *    code: "@tailwind utilities;",
    *  },
-   *]
-   * ```
+   * ]
    */
   layers?: readonly Layer[];
   /**
-   * The ids (files) to exclude from processing.
+   * The ids (filepaths and virtual modules) to exclude from processing.
    *
-   * @default [/\bnode_modules\b/]
+   * @default
+   * [
+   *   /^\0/,
+   *   /^(?:browser-external|dep|virtual):/,
+   *   /\bnode_modules\b/,
+   *   /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/,
+   * ]
    */
   excludes?: readonly ExcludeSpec[];
   /**
@@ -80,6 +82,8 @@ export interface Options {
    * However, this results in a larger bundle size and slower performance. \
    * If set to `false`, a runtime error will be thrown when a circular module is loaded. \
    * We recommend not enabling this option. Instead, consider fixing the circular dependency or using the `hoisted` mode.
+   *
+   * See {@link https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#handling-circular-dependencies|Handling Circular Dependencies} for details.
    *
    * @default false
    */
