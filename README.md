@@ -90,8 +90,13 @@ export default {
         },
       ],
       // `excludes`: optional. The default configuration is shown below.
-      // Specifies the files or directories to exclude from the CSS generation.
-      excludes: [/\bnode_modules\b/],
+      // Specifies the ids (filepaths and virtual modules) to exclude from processing.
+      excludes: [
+        /^\0/,
+        /^(?:browser-external|dep|virtual):/,
+        /\bnode_modules\b/,
+        /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/
+      ],
     }),
   ],
 };

@@ -1,7 +1,13 @@
 import { resolveDefaultTailwindConfigPath } from "../tailwind";
 import type { Options, ResolvedOptions } from "./types";
 
-const DEFAULT_EXCLUDES = [/\bnode_modules\b/] as const;
+const DEFAULT_EXCLUDES = [
+  /^\0/,
+  /^(?:browser-external|dep|virtual):/,
+  /\bnode_modules\b/,
+  /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/,
+] as const;
+
 const DEFAULT_LAYERS = [
   {
     mode: "global",
