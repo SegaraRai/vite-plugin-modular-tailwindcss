@@ -1,10 +1,15 @@
 {
   "name": "vite-plugin-modular-tailwindcss",
   "version": "0.2.0",
+  "license": "MIT",
   "author": {
     "name": "SegaraRai"
   },
-  "license": "MIT",
+  "homepage": "https://github.com/SegaraRai/vite-plugin-modular-tailwindcss#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SegaraRai/vite-plugin-modular-tailwindcss.git"
+  },
   "keywords": [
     "tailwindcss",
     "vite-plugin"
