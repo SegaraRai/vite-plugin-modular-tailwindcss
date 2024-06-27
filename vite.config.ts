@@ -21,6 +21,7 @@ export default defineConfig({
   plugins: [
     externalizeDeps(),
     dts({
+      exclude: ["tests/**"],
       tsconfigPath: "tsconfig.lib.json",
       compilerOptions: { baseUrl: "src" },
       rollupTypes: true,
