@@ -34,7 +34,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
-    "tag": "tsx scripts/gitTag.ts"
+    "tag": "tsx scripts/gitTag.ts",
+    "tag-and-publish": "pnpm tag && pnpm publish -r"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.6",
