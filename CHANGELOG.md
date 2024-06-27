@@ -1,5 +1,11 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.2.3
+
+### Patch Changes
+
+- dcdd024: Fix provenance not attached
+
 ## 0.2.1
 
 ### Patch Changes
