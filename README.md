@@ -95,7 +95,7 @@ export default {
         /^\0/,
         /^(?:browser-external|dep|virtual):/,
         /\bnode_modules\b/,
-        /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/
+        /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/,
       ],
     }),
   ],
