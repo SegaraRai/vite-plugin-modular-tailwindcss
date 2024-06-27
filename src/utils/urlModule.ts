@@ -23,8 +23,8 @@ export async function getModuleIdFromURLPath(
 }
 
 export function getURLPathFromModuleId(resolvedId: string): string {
-  // Not sure if this is correct
-  return `/@id/${normalizePath(resolvedId)}`;
+  // https://github.com/vitejs/vite/blob/v5.3.1/packages/vite/src/shared/utils.ts#L11
+  return `/@id/${normalizePath(resolvedId).replaceAll("\0", "__x00__")}`;
 }
 
 export function getIndexHTMLModuleId(config: ResolvedConfig): string {

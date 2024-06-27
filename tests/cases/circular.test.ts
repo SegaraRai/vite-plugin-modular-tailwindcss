@@ -58,30 +58,35 @@ export const c1 = "test-c-3 " + a2;
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/b.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss:test/b.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/c.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/c.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss:test/c.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/c.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/a.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/c.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/c.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/c.js::module.layer2.css?inline";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n.test-c-2 {\\n    --test-c: 2px\\n}\\n.test-c-3 {\\n    --test-c: 3px\\n}\\n.test-c-9 {\\n    --test-c: 9px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "tailwindcss.global.layer0.css?inline";
-    import l1h from "tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "tailwindcss:\\u0000test/entry.js::module.layer2.js";
+      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
+    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
+    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
     export default l0g + l1h + l2m;
     ",
       "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/a.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
     export default m0 + s;
+    ",
+      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+    export {
+      l0g as default
+    };
     ",
       "[output] _virtual/a.js": "import { b1 } from "./b.js";
     const a1 = "test-c-1 " + b1;
@@ -148,7 +153,7 @@ export const c1 = "test-c-3 " + a2;
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./tailwindcss.global.layer0.css.js";
+      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
     import l1h from "./entry.js__hoisted.layer1.css.js";
     import l2m from "./entry.js__module.layer2.js";
     const css = l0g + l1h + l2m;
@@ -168,16 +173,11 @@ export const c1 = "test-c-3 " + a2;
       l2m as default
     };
     ",
-      "[output] _virtual/tailwindcss.global.layer0.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
-    export {
-      l0g as default
-    };
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/c.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/c.js__module.layer2.js"></script>
@@ -270,32 +270,32 @@ export const c1 = "test-u-3 " + a2;
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n.test-u-9 {\\n    --test-u: 9px\\n}\\n"",
-      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/b.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
     const f = (...p) => p.includes(f) ? "" : m0(...p, f) + s;
     export default f;
     ",
       "[intermediate] tailwindcss:test/b.js::module.layer2.css?inline": "export default ".test-u-2 {\\n    --test-u: 2px\\n}\\n"",
-      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/c.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/c.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
     const f = (...p) => p.includes(f) ? "" : m0(...p, f) + s;
     export default f;
     ",
       "[intermediate] tailwindcss:test/c.js::module.layer2.css?inline": "export default ".test-u-3 {\\n    --test-u: 3px\\n}\\n"",
-      "[intermediate] tailwindcss:test/c.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/a.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/c.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/c.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/c.js::module.layer2.css?inline";
     const f = (...p) => p.includes(f) ? "" : m0(...p, f) + s;
     export default f;
     ",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "tailwindcss.global.layer0.css?inline";
-    import l1h from "tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "tailwindcss:\\u0000test/entry.js::module.layer2.js";
+      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
+    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
+    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
     export default l0g + l1h + l2m();
     ",
       "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/a.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
     const f = (...p) => p.includes(f) ? "" : m0(...p, f) + s;
     export default f;
     ",

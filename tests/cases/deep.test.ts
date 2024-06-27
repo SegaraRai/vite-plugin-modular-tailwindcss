@@ -47,24 +47,29 @@ export default "test-u-2 test-c-2 test-b-2";
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default ".test-u-2 {\\n    --test-u: 2px\\n}\\n"",
-      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/b.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/a.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.css?inline";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss:test/b.js::module.layer2.css?inline": "export default ".test-u-3 {\\n    --test-u: 3px\\n}\\n"",
-      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import s from "tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/b.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.css?inline";
     export default s;
     ",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n.test-c-2 {\\n    --test-c: 2px\\n}\\n.test-c-3 {\\n    --test-c: 3px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "tailwindcss.global.layer0.css?inline";
-    import l1h from "tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "tailwindcss:\\u0000test/entry.js::module.layer2.js";
+      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
+    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
+    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
     export default l0g + l1h + l2m;
     ",
       "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "tailwindcss:\\u0000test/a.js::module.layer2.js";
-    import s from "tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import m0 from "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.js";
+    import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
     export default m0 + s;
+    ",
+      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+    export {
+      l0g as default
+    };
     ",
       "[output] _virtual/a.js": "import "./b.js";
     const a = "test-u-2 test-c-2 test-b-2";
@@ -106,7 +111,7 @@ export default "test-u-2 test-c-2 test-b-2";
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./tailwindcss.global.layer0.css.js";
+      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
     import l1h from "./entry.js__hoisted.layer1.css.js";
     import l2m from "./entry.js__module.layer2.js";
     const css = l0g + l1h + l2m;
@@ -126,16 +131,11 @@ export default "test-u-2 test-c-2 test-b-2";
       l2m as default
     };
     ",
-      "[output] _virtual/tailwindcss.global.layer0.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
-    export {
-      l0g as default
-    };
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/b.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js__module.layer2.css.js"></script>
@@ -201,20 +201,26 @@ export default "test-u-2 test-c-2 test-b-2";
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css": "",
-      "[intermediate] tailwindcss:test/a.js::module.layer2.inject.js": "import "tailwindcss:\\u0000test/b.js::module.layer2.inject.js";
-    import "tailwindcss:\\u0000test/a.js::module.layer2.css";
+      "[intermediate] tailwindcss:test/a.js::module.layer2.inject.js": "import "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.inject.js";
+    import "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.css";
     ",
       "[intermediate] tailwindcss:test/b.js::module.layer2.css": "",
-      "[intermediate] tailwindcss:test/b.js::module.layer2.inject.js": "import "tailwindcss:\\u0000test/b.js::module.layer2.css";
+      "[intermediate] tailwindcss:test/b.js::module.layer2.inject.js": "import "\\u0000tailwindcss:\\u0000test/b.js::module.layer2.css";
     ",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",
-      "[intermediate] tailwindcss:test/entry.js::index.inject.js": "import "tailwindcss.global.layer0.css";
-    import "tailwindcss:\\u0000test/entry.js::hoisted.layer1.css";
-    import "tailwindcss:\\u0000test/entry.js::module.layer2.inject.js";
+      "[intermediate] tailwindcss:test/entry.js::index.inject.js": "import "\\u0000tailwindcss.global.layer0.css";
+    import "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css";
+    import "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.inject.js";
     ",
       "[intermediate] tailwindcss:test/entry.js::module.layer2.css": "",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.inject.js": "import "tailwindcss:\\u0000test/a.js::module.layer2.inject.js";
-    import "tailwindcss:\\u0000test/entry.js::module.layer2.css";
+      "[intermediate] tailwindcss:test/entry.js::module.layer2.inject.js": "import "\\u0000tailwindcss:\\u0000test/a.js::module.layer2.inject.js";
+    import "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css";
+    ",
+      "[output] _virtual/_tailwindcss.global.layer0.css": ".test-b-1 {
+        --test-b: 1px
+    }
+    /* TailwindCSS Base */
+    /* TailwindCSS Base Backdrop */
     ",
       "[output] _virtual/a.js": "import "./b.js";
     const a = "test-u-2 test-c-2 test-b-2";
@@ -232,7 +238,7 @@ export default "test-u-2 test-c-2 test-b-2";
         --test-u: 3px
     }
     ",
-      "[output] _virtual/entry.js": "/* empty css                              */
+      "[output] _virtual/entry.js": "/* empty css                               */
     /* empty css                             */
     /* empty css                        */
     /* empty css                        */
@@ -255,12 +261,6 @@ export default "test-u-2 test-c-2 test-b-2";
         --test-u: 1px
     }
     ",
-      "[output] _virtual/tailwindcss.global.layer0.css": ".test-b-1 {
-        --test-b: 1px
-    }
-    /* TailwindCSS Base */
-    /* TailwindCSS Base Backdrop */
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
@@ -268,7 +268,7 @@ export default "test-u-2 test-c-2 test-b-2";
         <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/b.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
-      <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
+      <link rel="stylesheet" crossorigin href="/_virtual/_tailwindcss.global.layer0.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.js__hoisted.layer1.css">
       <link rel="stylesheet" crossorigin href="/_virtual/b.js__module.layer2.css">
       <link rel="stylesheet" crossorigin href="/_virtual/a.js__module.layer2.css">

@@ -45,8 +45,8 @@ export type TailwindModuleId =
   | TailwindModuleIdModuleJS
   | TailwindModuleIdModuleCSS;
 
-const ID_GLOBAL_PREFIX = "tailwindcss.global.layer";
-const ID_COMMON_PREFIX = "tailwindcss:";
+const ID_GLOBAL_PREFIX = "\0tailwindcss.global.layer";
+const ID_COMMON_PREFIX = "\0tailwindcss:";
 const ID_SOURCE_DELIMITER = "::";
 
 const TOP_IMPORT_SPEC_RE = /[#?]tailwindcss(?:\/([^/]*))?$/;
