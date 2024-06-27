@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-modular-tailwindcss",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "author": {
     "name": "SegaraRai"
@@ -40,7 +40,7 @@
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
     "tag": "tsx scripts/gitTag.ts",
-    "tag-and-publish": "pnpm tag && pnpm publish -r"
+    "tag-and-publish": "pnpm tag && pnpm publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.6",
