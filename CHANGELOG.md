@@ -1,5 +1,12 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.2.1
+
+### Patch Changes
+
+- bfe2962: Fix publish script
+- ff9b058: Publish package with provenance
+
 ## 0.2.0
 
 ### Minor Changes
