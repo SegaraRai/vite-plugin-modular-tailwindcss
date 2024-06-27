@@ -74,6 +74,16 @@ export interface Options {
    * @default process.cwd() // fast-glob's default
    */
   globCWD?: string;
+  /**
+   * Specifies whether circular modules are allowed. \
+   * Enabling this option wraps the code in the `module` mode with a function to prevent runtime errors. \
+   * However, this results in a larger bundle size and slower performance. \
+   * If set to `false`, a runtime error will be thrown when a circular module is loaded. \
+   * We recommend not enabling this option. Instead, consider fixing the circular dependency or using the `hoisted` mode.
+   *
+   * @default false
+   */
+  allowCircularModules?: boolean;
 }
 
 export type ResolvedOptions = Required<Options>;

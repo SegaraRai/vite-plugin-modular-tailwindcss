@@ -104,8 +104,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css2.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css2.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
@@ -170,8 +169,7 @@ it("generates css without entry js", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.html__index.shallow.inject.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.html__index.shallow.inject.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.html__hoisted.layer1.shallow.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.html__module.layer2.css">

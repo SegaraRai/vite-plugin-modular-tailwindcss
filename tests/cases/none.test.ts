@@ -19,8 +19,7 @@ it("generates nothing if not imported", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
         Only for testing purposes.

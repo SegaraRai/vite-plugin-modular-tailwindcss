@@ -39,8 +39,7 @@ it("generates inject css with no used classes", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
@@ -93,8 +92,7 @@ it("generates inject css with an utility class", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.js__module.layer2.css">
@@ -147,8 +145,7 @@ it("generates inject css with an component class", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.js__hoisted.layer1.css">
@@ -207,8 +204,7 @@ it("generates inject css with an base class", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
@@ -271,8 +267,7 @@ it("generates inject css with all layers", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.js__hoisted.layer1.css">
       <link rel="stylesheet" crossorigin href="/_virtual/entry.js__module.layer2.css">

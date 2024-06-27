@@ -46,8 +46,7 @@ it("supports filesystem content", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">
     </head>
       <body>

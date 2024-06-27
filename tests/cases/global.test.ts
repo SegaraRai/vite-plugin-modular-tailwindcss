@@ -159,8 +159,7 @@ export default x + " test-b-2";
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/x.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js__module.layer2.css.js"></script>
@@ -223,8 +222,7 @@ it("creates css for specified content without entry js", async ({ expect }) => {
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.html__hoisted.layer1.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.html__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.html__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.html__index.inject.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">

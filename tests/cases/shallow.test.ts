@@ -100,8 +100,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.shallow.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__index.shallow.inline.js"></script>
@@ -202,8 +201,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/b.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/b.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/tailwindcss.global.layer0.css">

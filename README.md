@@ -20,9 +20,10 @@ This project provides a Vite plugin for integrating TailwindCSS in a modular fas
 6. [CSS Injection](#css-injection)
    - [Injection in JavaScript](#injection-in-javascript)
    - [Injection in HTML](#injection-in-html)
-7. [Development Precautions](#development-precautions)
-8. [Contributing](#contributing)
-9. [License](#license)
+7. [Handling Circular Dependencies](#handling-circular-dependencies)
+8. [Development Precautions](#development-precautions)
+9. [Contributing](#contributing)
+10. [License](#license)
 
 ## Motivation
 
@@ -161,6 +162,21 @@ To use TailwindCSS in HTML, you can use the `?tailwindcss/inject-shallow` import
 
 Here, `inject` means injecting CSS into the document instead of inlining it, and `shallow` means not tracing dependencies.
 Since HTML usually loads the main script, not specifying `shallow` may unintentionally generate and inject TailwindCSS for the whole project.
+
+## Handling Circular Dependencies
+
+While it's best to avoid circular dependencies, this plugin does support them.
+If the module importing `#tailwindcss` or `#tailwindcss/inject` has no circular dependencies in its recursive dependencies, everything will work fine.
+
+If circular dependencies do exist, the necessary action depends on the layer mode you're using:
+
+- **Global or Hoisted Mode**: Dependencies are resolved at build time, so no action is needed.
+- **Module Mode**: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
+
+Even one layer in `module` mode (which is the default configuration) can cause this issue.
+To address circular dependency issues in module mode, set the `allowCircularModules` option to `true`.
+This will wrap the export in a function, delaying the CSS combining.
+Be aware that enabling this option slightly increases bundle size and may impact performance.
 
 ## Development Precautions
 

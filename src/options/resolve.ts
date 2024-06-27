@@ -23,5 +23,6 @@ export function resolveOptions(options: Options): ResolvedOptions {
     layers: options.layers ?? JSON.parse(JSON.stringify(DEFAULT_LAYERS)),
     configPath: options.configPath ?? resolveDefaultTailwindConfigPath(),
     globCWD: options.globCWD ?? process.cwd(),
+    allowCircularModules: options.allowCircularModules ?? false,
   };
 }

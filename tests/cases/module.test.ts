@@ -173,8 +173,7 @@ export default x + " test-u-2";
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/modulepreload-polyfill.js"></script>
-      <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/tailwindcss.global.layer0.css.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
       <script type="module" crossorigin src="/_virtual/x.js__module.layer2.css.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js__module.layer2.css.js"></script>
