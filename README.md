@@ -73,6 +73,7 @@ Follow these steps to quickly set up and use the plugin in your project:
 
    ```ts
    // vite.config.ts
+
    import modularTailwindCSS from "vite-plugin-modular-tailwindcss";
 
    export default {
@@ -97,6 +98,7 @@ Follow these steps to quickly set up and use the plugin in your project:
 
    ```ts
    // src/component.ts
+
    import css from "#tailwindcss";
 
    import { textBlack } from "./styles";
@@ -144,7 +146,7 @@ export default {
 
 A layer is a collection of CSS code that is generated and combined in a specific order. Each layer should have exactly one `@tailwind` directive, but it can also include other CSS code.
 
-> [!CAUTION]
+> [!CAUTION]  
 > Avoid specifying multiple `@tailwind` directives in a single layer.
 > Layers are generated on a per-file basis and then merged, so the ordering relationships within layers are not maintained.
 > This can result in unexpected ordering of CSS rules.
@@ -157,7 +159,7 @@ If `apply` is not specified, the layer will be included at both build and develo
 
 A layer can be generated in one of three modes: `global`, `hoisted`, or `module`.
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > Layer modes are only available during the build process and are not available during development.
 > Refer to the [Development Precautions](#development-precautions) section for more information.
 
@@ -180,7 +182,7 @@ The CSS is then imported recursively, creating a dependency graph identical to t
 
 The difference between the `hoisted` and `module` modes is that in the `module` mode, the module graph is maintained, and CSS is concatenated at runtime, while in the `hoisted` mode, the dependency graph is resolved, and the entire CSS is generated at build time.
 
-> [!NOTE]
+> [!NOTE]  
 > If you have circular dependencies, using the `module` mode may result in a `ReferenceError` during runtime.
 > Refer to the [Handling Circular Dependencies](#handling-circular-dependencies) section for more information.
 
@@ -228,7 +230,7 @@ Users can still import `#tailwindcss` and `#tailwindcss/inject`, but their conte
 
 Since it uses native PostCSS and TailwindCSS, `postcss.config.js` and `tailwind.config.js` must be configured for this plugin to function during development.
 
-> [!TIP]
+> [!TIP]  
 > The `apply` option in the layer configuration specifies whether a layer is included at build time (`apply: "build"`) or at development time (`apply: "serve"`).
 > If `apply` is not specified, the layer will be included at both build and development times.
 
