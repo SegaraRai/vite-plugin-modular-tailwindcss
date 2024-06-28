@@ -80,7 +80,18 @@ Follow these steps to quickly set up and use the plugin in your project:
    };
    ```
 
-3. **Use TailwindCSS in your components:**
+3. **Reference `vite-plugin-modular-tailwindcss/client` in your `vite-env.d.ts` file:**
+
+   This step is only necessary if you are using TypeScript.
+
+   ```ts
+   // vite-env.d.ts
+
+   /// <reference types="vite/client" />
+   /// <reference types="vite-plugin-modular-tailwindcss/client" />
+   ```
+
+4. **Use TailwindCSS in your components:**
 
    Import the `#tailwindcss` module in your component files to generate TailwindCSS styles.
 
