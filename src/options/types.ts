@@ -31,15 +31,14 @@ export type ExcludeSpec =
 
 export interface Options {
   /**
-   * The path to the Tailwind CSS config file. \
-   * Automatically resolved if not specified.
+   * The path to the TailwindCSS configuration file. \
+   * If not provided, the plugin will automatically locate the configuration file.
    */
   configPath?: string;
   /**
-   * The layers to generate. \
-   * CSS will be loaded or concatenated in the order of the `layers` array.
+   * The layers to generate.
    *
-   * See {@link https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#layer-modes|Layer Modes} for details.
+   * See {@link https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#layers|Layers} for details.
    *
    * @default
    * [
@@ -59,7 +58,7 @@ export interface Options {
    */
   layers?: readonly Layer[];
   /**
-   * The ids (filepaths and virtual modules) to exclude from processing.
+   * The Rollup IDs (filepaths and virtual modules) that should be excluded from processing.
    *
    * @default
    * [
@@ -71,13 +70,14 @@ export interface Options {
    */
   excludes?: readonly ExcludeSpec[];
   /**
-   * The working directory for glob patterns. (`cwd` of fast-glob options)
+   * The working directory for glob patterns in the `content` option. (`cwd` of fast-glob options) \
+   * This option affects both the `content` in the layer options and the `content` in the TailwindCSS configuration file.
    *
    * @default process.cwd() // fast-glob's default
    */
   globCWD?: string;
   /**
-   * Specifies whether circular modules are allowed. \
+   * Whether to allow circular dependencies in module mode layers. \
    * Enabling this option wraps the code in the `module` mode with a function to prevent runtime errors. \
    * However, this results in a larger bundle size and slower performance. \
    * If set to `false`, a runtime error will be thrown when a circular module is loaded. \

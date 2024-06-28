@@ -13,10 +13,11 @@ This project provides a Vite plugin for integrating TailwindCSS in a modular fas
 4. [Usage](#usage)
    - [Basic Configuration](#basic-configuration)
    - [Example](#example)
-5. [Layer Modes](#layer-modes)
-   - [Global Mode](#global-mode)
-   - [Hoisted Mode](#hoisted-mode)
-   - [Module Mode](#module-mode)
+5. [Layers](#layers)
+   - [Layer Modes](#layer-modes)
+     - [Global Mode](#global-mode)
+     - [Hoisted Mode](#hoisted-mode)
+     - [Module Mode](#module-mode)
 6. [CSS Injection](#css-injection)
    - [Injection in JavaScript](#injection-in-javascript)
    - [Injection in HTML](#injection-in-html)
@@ -35,7 +36,7 @@ A more efficient approach is to generate TailwindCSS styles on a per-component b
 This method allows for a modular and tree-shakable design, optimizing performance and maintainability.
 This plugin addresses this need by enabling the generation of TailwindCSS styles in a modular manner, making it ideal for creating web components and UI libraries.
 
-To avoid duplication of common CSS such as @tailwind base;, the plugin supports three aggregation levels (global, hoist, and module) for each layer, ensuring efficient and organized style management.
+To avoid duplication of common CSS such as `@tailwind base;`, the plugin supports three aggregation levels (global, hoist, and module) for each layer, ensuring efficient and organized style management.
 
 Prior Art: [UnoCSS shadow-dom mode](https://unocss.dev/integrations/vite#shadow-dom)
 
@@ -74,7 +75,11 @@ import modularTailwindCSS from "vite-plugin-modular-tailwindcss";
 export default {
   plugins: [
     modularTailwindCSS({
-      // layers: optional. The default configuration is shown below.
+      // `configPath`: Optional. Specifies the path to the TailwindCSS configuration file.
+      // If not provided, the plugin will automatically locate the configuration file.
+      configPath: "./tailwind.config.js",
+      // `layers`: Optional. The default configuration is shown below.
+      // See the Layers section for more information.
       layers: [
         {
           mode: "global",
@@ -89,14 +94,21 @@ export default {
           code: "@tailwind utilities;",
         },
       ],
-      // `excludes`: optional. The default configuration is shown below.
-      // Specifies the ids (filepaths and virtual modules) to exclude from processing.
+      // `excludes`: Optional. The default configuration is shown below.
+      // Specifies the Rollup IDs (filepaths and virtual modules) that should be excluded from processing.
       excludes: [
         /^\0/,
         /^(?:browser-external|dep|virtual):/,
         /\bnode_modules\b/,
         /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/,
       ],
+      // `globCWD`: Optional. The default value is `process.cwd()`.
+      // Specifies the current working directory for glob patterns in the `content` option.
+      // This option affects both the `content` in the layer options and the `content` in the TailwindCSS configuration file.
+      globCWD: process.cwd(),
+      // `allowCircularModules`: optional. The default value is `false`.
+      // Specifies whether to allow circular dependencies in module mode layers.
+      allowCircularModules: false,
     }),
   ],
 };
@@ -110,29 +122,44 @@ Here's how you might use the plugin in your components:
 // src/component.ts
 import css from "#tailwindcss";
 
-import { textWhite } from "./styles";
-// -> textWhite: "text-white"
+import { textBlack } from "./styles";
+// -> textBlack: "text-black"
 
-const styles = textWhite + " bg-red-500";
-// -> styles: "text-white bg-red-500"
+const styles = textBlack + " whitespace-nowrap";
+// -> styles: "text-black whitespace-nowrap"
 
 console.log(css);
-// -> Output: "/* ...reset css... */ .text-white{--tw-text-opacity:1;color:#fff}.bg-red-500{background-color:#dc2626}"
+// -> Output: "/* ...reset css... */ .text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity))}.whitespace-nowrap{white-space:nowrap}"
 ```
 
-## Layer Modes
+You can specify whether a layer is included at build time or at development time.
+Specify `apply: "build"` for layers to be included only at build time, and `apply: "serve"` for layers to be included only at development time.
+If `apply` is not specified, the layer will be included at both build and development times.
 
-The plugin supports three modes for generating TailwindCSS styles: `global`, `hoisted`, and `module`.
+## Layers
 
-These modes are only available during the build process and are not available during development.
-See the [Development Precautions](#development-precautions) section for more information.
+A layer is a collection of CSS code that is generated and combined in a specific order.
+Each layer should have exactly one `@tailwind` directive, but it can also include other CSS code.
+
+> [!CAUTION]
+> Avoid specifying multiple `@tailwind` directives in a single layer.
+> Layers are generated on a per-file basis and then merged, so the ordering relationships within layers are not maintained.
+> This can result in unexpected ordering of CSS rules.
+
+### Layer Modes
+
+A layer can be generated in one of three modes: `global`, `hoisted`, or `module`.
+
+> [!IMPORTANT]
+> Layer modes are only available during the build process and are not available during development.
+> Refer to the [Development Precautions](#development-precautions) section for more information.
 
 ### Global Mode
 
 The `global` mode scans the files specified in the `content` option and generates the CSS for the specified layer.
-This is similar to `import css from "./myTailwind.css";`, where `myTailwind.css` contains `@tailwind base;`.
+This is similar to `import css from "./myTailwind.css";`, where `myTailwind.css` contains `@tailwind` directives.
 
-`content` can be set either in the layer options or in the `tailwind.config.js` file.
+The `content` can be set either in the layer options or in the TailwindCSS configuration file.
 It is not possible to set the `content` automatically, as it must be generated before the list of codes used by Vite becomes available.
 
 ### Hoisted Mode
@@ -145,6 +172,10 @@ The `module` mode scans the importer and generates the CSS for the specified lay
 The CSS is then imported recursively, creating a dependency graph identical to the importer's dependency graph and concatenated at runtime.
 
 The difference between the `hoisted` and `module` modes is that in the `module` mode, the module graph is maintained, and CSS is concatenated at runtime, while in the `hoisted` mode, the dependency graph is resolved, and the entire CSS is generated at build time.
+
+> [!NOTE]
+> If you have circular dependencies, using the `module` mode may result in a `ReferenceError` during runtime.
+> Refer to the [Handling Circular Dependencies](#handling-circular-dependencies) section for more information.
 
 ## CSS Injection
 
