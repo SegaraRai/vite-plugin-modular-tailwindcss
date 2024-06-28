@@ -40,7 +40,7 @@
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
     "tag": "tsx scripts/gitTag.ts",
-    "tag-and-publish": "pnpm tag && pnpm publish"
+    "tag-and-publish": "pnpm tag && pnpm publish -r"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.6",
