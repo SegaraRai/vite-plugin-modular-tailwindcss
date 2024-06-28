@@ -60,10 +60,10 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
 
-      - name: Upload diffs if VRT failed
+      - name: Upload Test Results if VRT failed
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: VRT diffs
+          name: VRT Results
           path: playground/test-results
           retention-days: 7
