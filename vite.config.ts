@@ -1,3 +1,4 @@
+import { env } from "node:process";
 import dts from "vite-plugin-dts";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
 import { defineConfig } from "vitest/config";
@@ -30,5 +31,6 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     exclude: ["playground/**"],
+    fileParallelism: !env.CI,
   },
 });
