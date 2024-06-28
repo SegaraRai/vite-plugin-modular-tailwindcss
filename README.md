@@ -9,22 +9,20 @@ This project provides a Vite plugin for integrating TailwindCSS in a modular fas
 
 1. [Motivation](#motivation)
 2. [Features](#features)
-3. [Installation](#installation)
-4. [Usage](#usage)
-   - [Basic Configuration](#basic-configuration)
-   - [Example](#example)
-5. [Layers](#layers)
-   - [Layer Modes](#layer-modes)
-     - [Global Mode](#global-mode)
-     - [Hoisted Mode](#hoisted-mode)
-     - [Module Mode](#module-mode)
-6. [CSS Injection](#css-injection)
+3. [Quick Start](#quick-start)
+4. [Advanced Configuration](#advanced-configuration)
+   - [Layers](#layers)
+     - [Layer Modes](#layer-modes)
+       - [Global Mode](#global-mode)
+       - [Hoisted Mode](#hoisted-mode)
+       - [Module Mode](#module-mode)
+   - [Handling Circular Dependencies](#handling-circular-dependencies)
+5. [CSS Injection](#css-injection)
    - [Injection in JavaScript](#injection-in-javascript)
    - [Injection in HTML](#injection-in-html)
-7. [Handling Circular Dependencies](#handling-circular-dependencies)
-8. [Development Precautions](#development-precautions)
-9. [Contributing](#contributing)
-10. [License](#license)
+6. [Development Precautions](#development-precautions)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ## Motivation
 
@@ -47,104 +45,102 @@ Prior Art: [UnoCSS shadow-dom mode](https://unocss.dev/integrations/vite#shadow-
 - **Optimized for Vite**: Supports minification and extraction of generated CSS into separate files, enhancing performance and maintainability.
 - **Flexible Configuration**: Easily configure the plugin to include or exclude specific files or directories, allowing for precise control over which components generate TailwindCSS styles.
 
-## Installation
+## Quick Start
 
-To install the plugin, run one of the following commands in your project directory:
+Before you begin, ensure you have TailwindCSS installed in your project.
+To install TailwindCSS, follow the instructions in the [TailwindCSS documentation](https://tailwindcss.com/docs/guides/vite).
 
-```sh
-# npm
-npm install vite-plugin-modular-tailwindcss --save-dev
+Follow these steps to quickly set up and use the plugin in your project:
 
-# yarn
-yarn add vite-plugin-modular-tailwindcss --dev
+1. **Install the plugin:**
 
-# pnpm
-pnpm add vite-plugin-modular-tailwindcss --save-dev
-```
+   Run one of the following commands in your project directory:
 
-## Usage
+   ```sh
+   # npm
+   npm install vite-plugin-modular-tailwindcss --save-dev
 
-### Basic Configuration
+   # yarn
+   yarn add vite-plugin-modular-tailwindcss --dev
 
-Add the plugin to your `vite.config.ts` file and configure it according to your needs:
+   # pnpm
+   pnpm add vite-plugin-modular-tailwindcss --save-dev
+   ```
+
+2. **Add the plugin to your `vite.config.ts` file:**
+
+   No configuration is needed for basic usage.
+
+   ```ts
+   // vite.config.ts
+   import modularTailwindCSS from "vite-plugin-modular-tailwindcss";
+
+   export default {
+     plugins: [modularTailwindCSS()],
+   };
+   ```
+
+3. **Use TailwindCSS in your components:**
+
+   Import the `#tailwindcss` module in your component files to generate TailwindCSS styles.
+
+   ```ts
+   // src/component.ts
+   import css from "#tailwindcss";
+
+   import { textBlack } from "./styles";
+   // -> textBlack: "text-black"
+
+   const styles = textBlack + " whitespace-nowrap";
+   // -> styles: "text-black whitespace-nowrap"
+
+   console.log(css);
+   // -> Output: "/* ...reset css... */ .text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity))}.whitespace-nowrap{white-space:nowrap}"
+   ```
+
+## Advanced Configuration
+
+You can pass an optional configuration to the plugin to customize its behavior.
 
 ```ts
 // vite.config.ts
+
 import modularTailwindCSS from "vite-plugin-modular-tailwindcss";
 
 export default {
   plugins: [
     modularTailwindCSS({
-      // `configPath`: Optional. Specifies the path to the TailwindCSS configuration file.
-      // If not provided, the plugin will automatically locate the configuration file.
       configPath: "./tailwind.config.js",
-      // `layers`: Optional. The default configuration is shown below.
-      // See the Layers section for more information.
       layers: [
-        {
-          mode: "global",
-          code: "@tailwind base;",
-        },
-        {
-          mode: "hoisted",
-          code: "@tailwind components;",
-        },
-        {
-          mode: "module",
-          code: "@tailwind utilities;",
-        },
+        { mode: "global", code: "@tailwind base;" },
+        { mode: "hoisted", code: "@tailwind components;" },
+        { mode: "module", code: "@tailwind utilities;" },
       ],
-      // `excludes`: Optional. The default configuration is shown below.
-      // Specifies the Rollup IDs (filepaths and virtual modules) that should be excluded from processing.
       excludes: [
         /^\0/,
         /^(?:browser-external|dep|virtual):/,
         /\bnode_modules\b/,
         /\.(?:css|scss|sass|less|styl|stylus|pcss|sss|svg)(?:\?|$)/,
       ],
-      // `globCWD`: Optional. The default value is `process.cwd()`.
-      // Specifies the current working directory for glob patterns in the `content` option.
-      // This option affects both the `content` in the layer options and the `content` in the TailwindCSS configuration file.
       globCWD: process.cwd(),
-      // `allowCircularModules`: optional. The default value is `false`.
-      // Specifies whether to allow circular dependencies in module mode layers.
       allowCircularModules: false,
     }),
   ],
 };
 ```
 
-### Example
+### Layers
 
-Here's how you might use the plugin in your components:
-
-```ts
-// src/component.ts
-import css from "#tailwindcss";
-
-import { textBlack } from "./styles";
-// -> textBlack: "text-black"
-
-const styles = textBlack + " whitespace-nowrap";
-// -> styles: "text-black whitespace-nowrap"
-
-console.log(css);
-// -> Output: "/* ...reset css... */ .text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity))}.whitespace-nowrap{white-space:nowrap}"
-```
-
-You can specify whether a layer is included at build time or at development time.
-Specify `apply: "build"` for layers to be included only at build time, and `apply: "serve"` for layers to be included only at development time.
-If `apply` is not specified, the layer will be included at both build and development times.
-
-## Layers
-
-A layer is a collection of CSS code that is generated and combined in a specific order.
-Each layer should have exactly one `@tailwind` directive, but it can also include other CSS code.
+A layer is a collection of CSS code that is generated and combined in a specific order. Each layer should have exactly one `@tailwind` directive, but it can also include other CSS code.
 
 > [!CAUTION]
 > Avoid specifying multiple `@tailwind` directives in a single layer.
 > Layers are generated on a per-file basis and then merged, so the ordering relationships within layers are not maintained.
 > This can result in unexpected ordering of CSS rules.
+
+You can specify whether a layer is included at build time or at development time.
+Specify `apply: "build"` for layers to be included only at build time, and `apply: "serve"` for layers to be included only at development time.
+If `apply` is not specified, the layer will be included at both build and development times.
 
 ### Layer Modes
 
@@ -177,6 +173,20 @@ The difference between the `hoisted` and `module` modes is that in the `module` 
 > If you have circular dependencies, using the `module` mode may result in a `ReferenceError` during runtime.
 > Refer to the [Handling Circular Dependencies](#handling-circular-dependencies) section for more information.
 
+## Handling Circular Dependencies
+
+While it's best to avoid circular dependencies, this plugin does support them.
+If the module importing `#tailwindcss` or `#tailwindcss/inject` has no circular dependencies in its recursive dependencies, everything will work fine.
+
+If circular dependencies do exist, the necessary action depends on the layer mode you're using:
+
+- **Global or Hoisted Mode**: Dependencies are resolved at build time, so no action is needed.
+- **Module Mode**: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
+
+Even one layer in `module` mode (which is the default configuration) can cause this issue.
+To address circular dependency issues in module mode, set the `allowCircularModules` option to `true`.
+This will wrap the export in a function, delaying the CSS combining. Be aware that enabling this option slightly increases bundle size and may impact performance.
+
 ## CSS Injection
 
 ### Injection in JavaScript
@@ -199,29 +209,17 @@ To use TailwindCSS in HTML, you can use the `?tailwindcss/inject-shallow` import
 Here, `inject` means injecting CSS into the document instead of inlining it, and `shallow` means not tracing dependencies.
 Since HTML usually loads the main script, not specifying `shallow` may unintentionally generate and inject TailwindCSS for the whole project.
 
-## Handling Circular Dependencies
-
-While it's best to avoid circular dependencies, this plugin does support them.
-If the module importing `#tailwindcss` or `#tailwindcss/inject` has no circular dependencies in its recursive dependencies, everything will work fine.
-
-If circular dependencies do exist, the necessary action depends on the layer mode you're using:
-
-- **Global or Hoisted Mode**: Dependencies are resolved at build time, so no action is needed.
-- **Module Mode**: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
-
-Even one layer in `module` mode (which is the default configuration) can cause this issue.
-To address circular dependency issues in module mode, set the `allowCircularModules` option to `true`.
-This will wrap the export in a function, delaying the CSS combining.
-Be aware that enabling this option slightly increases bundle size and may impact performance.
-
 ## Development Precautions
 
 During development (`serve` mode, when running `npm run vite`), some Vite features are restricted, preventing the real plugin from running.
-Therefore, we provide an alternative, lightweight plugin for development.
-This alternative plugin concatenates the contents of the layers into one and lets Vite's native PostCSS and TailwindCSS plugins handle it.
+Thus, we provide an alternative, lightweight plugin for development. This alternative plugin concatenates the contents of the layers into one and lets Vite's native PostCSS and TailwindCSS plugins handle it.
 Users can still import `#tailwindcss` and `#tailwindcss/inject`, but their contents will be replaced with a reference to the global TailwindCSS styles.
 
 Since it uses native PostCSS and TailwindCSS, `postcss.config.js` and `tailwind.config.js` must be configured for this plugin to function during development.
+
+> [!TIP]
+> The `apply` option in the layer configuration specifies whether a layer is included at build time (`apply: "build"`) or at development time (`apply: "serve"`).
+> If `apply` is not specified, the layer will be included at both build and development times.
 
 ## Contributing
 
