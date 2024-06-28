@@ -7,6 +7,7 @@ import { generateModuleJSCode, generateTopJSCode } from "./js";
 import { getFilteredModuleImportsRecursive } from "./utils";
 
 export * from "./context";
+export { hasCircularDependencies } from "./utils";
 
 function getExtension(source: string): string {
   return source.split(".").pop() ?? "js";

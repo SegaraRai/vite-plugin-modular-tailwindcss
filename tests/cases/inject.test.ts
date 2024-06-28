@@ -1,17 +1,23 @@
 import { it } from "vitest";
 import { runBuild } from "../runner";
-import { createDefaultLayers, getOutputHTML } from "../utils";
+import { createDefaultLayers, getOutputCSS, getOutputHTML } from "../utils";
 
 it("generates inject css with no used classes", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import "#tailwindcss/inject";\nconst X = "";\nconsole.log(X);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).toContain("stylesheet");
-  expect(result).toMatchInlineSnapshot(`
+  expect(getOutputHTML(files)).toContain("stylesheet");
+
+  const css = getOutputCSS(files);
+  expect(css).not.toContain(".test-u-1");
+  expect(css).not.toContain(".test-c-1");
+  expect(css).not.toContain(".test-b-1");
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",
@@ -54,15 +60,24 @@ it("generates inject css with no used classes", async ({ expect }) => {
 });
 
 it("generates inject css with an utility class", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import "#tailwindcss/inject";\nconst X = "test-u-1";\nconsole.log(X);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).toContain("stylesheet");
-  expect(result).toMatchInlineSnapshot(`
+  expect(getOutputHTML(files)).toContain("stylesheet");
+
+  const css = getOutputCSS(files);
+  expect(css).toContain(".test-u-1");
+  expect(css).not.toContain(".test-c-1");
+  expect(css).not.toContain(".test-b-1");
+  expect(css).not.toContain(".test-u-2");
+  expect(css).not.toContain(".test-c-2");
+  expect(css).not.toContain(".test-b-2");
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",
@@ -107,15 +122,24 @@ it("generates inject css with an utility class", async ({ expect }) => {
 });
 
 it("generates inject css with an component class", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import "#tailwindcss/inject";\nconst X = "test-c-1";\nconsole.log(X);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).toContain("stylesheet");
-  expect(result).toMatchInlineSnapshot(`
+  expect(getOutputHTML(files)).toContain("stylesheet");
+
+  const css = getOutputCSS(files);
+  expect(css).not.toContain(".test-u-1");
+  expect(css).toContain(".test-c-1");
+  expect(css).not.toContain(".test-b-1");
+  expect(css).not.toContain(".test-u-2");
+  expect(css).not.toContain(".test-c-2");
+  expect(css).not.toContain(".test-b-2");
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",
@@ -160,7 +184,7 @@ it("generates inject css with an component class", async ({ expect }) => {
 });
 
 it("generates inject css with an base class", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -172,8 +196,17 @@ it("generates inject css with an base class", async ({ expect }) => {
     }
   );
 
-  expect(getOutputHTML(result)).toContain("stylesheet");
-  expect(result).toMatchInlineSnapshot(`
+  expect(getOutputHTML(files)).toContain("stylesheet");
+
+  const css = getOutputCSS(files);
+  expect(css).not.toContain(".test-u-1");
+  expect(css).not.toContain(".test-c-1");
+  expect(css).toContain(".test-b-1");
+  expect(css).not.toContain(".test-u-2");
+  expect(css).not.toContain(".test-c-2");
+  expect(css).not.toContain(".test-b-2");
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",
@@ -219,7 +252,7 @@ it("generates inject css with an base class", async ({ expect }) => {
 });
 
 it("generates inject css with all layers", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -231,8 +264,17 @@ it("generates inject css with all layers", async ({ expect }) => {
     }
   );
 
-  expect(getOutputHTML(result)).toContain("stylesheet");
-  expect(result).toMatchInlineSnapshot(`
+  expect(getOutputHTML(files)).toContain("stylesheet");
+
+  const css = getOutputCSS(files);
+  expect(css).toContain(".test-u-1");
+  expect(css).toContain(".test-c-1");
+  expect(css).toContain(".test-b-1");
+  expect(css).not.toContain(".test-u-2");
+  expect(css).not.toContain(".test-c-2");
+  expect(css).not.toContain(".test-b-2");
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css": "",

@@ -8,26 +8,26 @@ import {
 } from "../utils";
 
 it("generates inline css with no used classes", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import css from "#tailwindcss";\nconst X = "";\nconsole.log(X, css);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).not.toContain(".test-u-1");
   expect(code).not.toContain(".test-c-1");
   expect(code).not.toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).not.toContain(".test-u-1");
   expect(output).not.toContain(".test-c-1");
   expect(output).not.toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
@@ -92,26 +92,26 @@ it("generates inline css with no used classes", async ({ expect }) => {
 });
 
 it("generates inline css with an utility class", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import css from "#tailwindcss";\nconst X = "test-u-1";\nconsole.log(X, css);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).toContain(".test-u-1");
   expect(code).not.toContain(".test-c-1");
   expect(code).not.toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).toContain(".test-u-1");
   expect(output).not.toContain(".test-c-1");
   expect(output).not.toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
@@ -176,26 +176,26 @@ it("generates inline css with an utility class", async ({ expect }) => {
 });
 
 it("generates inline css with an component class", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       'import css from "#tailwindcss";\nconst X = "test-c-1";\nconsole.log(X, css);\n',
     ],
   ]);
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).not.toContain(".test-u-1");
   expect(code).toContain(".test-c-1");
   expect(code).not.toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).not.toContain(".test-u-1");
   expect(output).toContain(".test-c-1");
   expect(output).not.toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
@@ -260,7 +260,7 @@ it("generates inline css with an component class", async ({ expect }) => {
 });
 
 it("generates inline css with an base class", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -272,19 +272,19 @@ it("generates inline css with an base class", async ({ expect }) => {
     }
   );
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).not.toContain(".test-u-1");
   expect(code).not.toContain(".test-c-1");
   expect(code).toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).not.toContain(".test-u-1");
   expect(output).not.toContain(".test-c-1");
   expect(output).toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
@@ -349,7 +349,7 @@ it("generates inline css with an base class", async ({ expect }) => {
 });
 
 it("generates inline css with all layers", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -361,19 +361,19 @@ it("generates inline css with all layers", async ({ expect }) => {
     }
   );
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).toContain(".test-u-1");
   expect(code).toContain(".test-c-1");
   expect(code).toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).toContain(".test-u-1");
   expect(output).toContain(".test-c-1");
   expect(output).toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
@@ -438,26 +438,26 @@ it("generates inline css with all layers", async ({ expect }) => {
 });
 
 it("works with side-effect only import", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [["entry.js", 'import "#tailwindcss";\n"test-u-1 test-c-1 ---";\n']],
     {
       layers: createDefaultLayers('"test-b-1"'),
     }
   );
 
-  expect(getOutputHTML(result)).not.toContain("stylesheet");
+  expect(getOutputHTML(files)).not.toContain("stylesheet");
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
   expect(code).toContain(".test-u-1");
   expect(code).toContain(".test-c-1");
   expect(code).toContain(".test-b-1");
 
-  const output = getOutput(result);
+  const output = getOutput(files);
   expect(output).not.toContain(".test-u-1");
   expect(output).not.toContain(".test-c-1");
   expect(output).not.toContain(".test-b-1");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",

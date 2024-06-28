@@ -1,7 +1,8 @@
 import { build, normalizePath } from "vite";
 import { loadPlugin } from "./loadPlugin";
-import type { TestCase, TestOptions, TestResult } from "./types";
+import type { TestCase, TestOptions, TestResult, TestResultLog } from "./types";
 import { getDefaultTestOptions, redactProjectRoot } from "./utils";
+import type { PluginContext } from "../src/utils";
 
 function isMTWId(id: string): boolean {
   return id.includes("tailwindcss.") || id.includes("tailwindcss:");
@@ -21,12 +22,41 @@ export async function runBuild(
 ): Promise<TestResult> {
   const { modularTailwindCSSPluginBuild } = await loadPlugin();
 
+  const collectedWarnings: TestResultLog[] = [];
+
   const resolvedOptions = {
     ...getDefaultTestOptions(),
     ...options,
   };
 
   const configure = resolvedOptions.configure ?? ((config) => config);
+
+  const plugin = modularTailwindCSSPluginBuild({ ...resolvedOptions });
+
+  const tweakFunction = (
+    fn: (this: unknown, ...args: unknown[]) => unknown
+  ) => {
+    return function (this: unknown, ...args: unknown[]) {
+      if (!!this && "warn" in (this as PluginContext)) {
+        (this as PluginContext).warn = (log): void => {
+          collectedWarnings.push(typeof log === "function" ? log() : log);
+        };
+      }
+      return fn.call(this, ...args);
+    };
+  };
+
+  for (const [key, value] of Object.entries(plugin)) {
+    if (typeof value === "function") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (plugin as any)[key] = tweakFunction(value);
+    } else if (
+      typeof value === "object" &&
+      typeof value.handler === "function"
+    ) {
+      value.handler = tweakFunction(value.handler);
+    }
+  }
 
   const resultMap = new Map<string, string>();
   await build(
@@ -139,12 +169,14 @@ export async function runBuild(
             },
           },
         },
-        modularTailwindCSSPluginBuild({ ...resolvedOptions }),
+        plugin,
       ],
     })
   );
 
-  return Object.fromEntries(
+  const files = Object.fromEntries(
     Array.from(resultMap).sort(([a], [b]) => a.localeCompare(b))
   );
+
+  return { files, warnings: collectedWarnings };
 }

@@ -3,7 +3,7 @@ import { runBuild } from "../runner";
 import { createDefaultLayers, getAllCode, getOutputCSS } from "../utils";
 
 it("only references direct code (inline)", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -26,7 +26,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
     }
   );
 
-  const code = getAllCode(result);
+  const code = getAllCode(files);
 
   expect(code).toContain(".test-u-1");
   expect(code).toContain(".test-c-1");
@@ -39,7 +39,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
   expect(code).not.toContain(".test-c-3");
   expect(code).not.toContain(".test-b-3");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.shallow.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
@@ -118,7 +118,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
 });
 
 it("only references direct code (inject)", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -141,7 +141,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
     }
   );
 
-  const code = getOutputCSS(result);
+  const code = getOutputCSS(files);
 
   expect(code).toContain(".test-u-1");
   expect(code).toContain(".test-c-1");
@@ -154,7 +154,7 @@ export default b + " test-u-2 test-c-2 test-b-2";
   expect(code).not.toContain(".test-c-3");
   expect(code).not.toContain(".test-b-3");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.shallow.css": "",

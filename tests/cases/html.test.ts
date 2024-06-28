@@ -3,7 +3,7 @@ import { runBuild } from "../runner";
 import { createDefaultLayers, getDefaultHead, getOutputCSS } from "../utils";
 
 it("generates css which only contains rules for HTML", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [
       [
         "entry.js",
@@ -19,7 +19,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
     }
   );
 
-  const css = getOutputCSS(result);
+  const css = getOutputCSS(files);
   expect(css).toContain(".test-u-1");
   expect(css).toContain(".test-c-1");
   expect(css).toContain(".test-b-1");
@@ -28,7 +28,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
   expect(css).not.toContain(".test-c-9");
   expect(css).not.toContain(".test-b-9");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
@@ -124,19 +124,19 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
 });
 
 it("generates css without entry js", async ({ expect }) => {
-  const result = await runBuild([], {
+  const { files } = await runBuild([], {
     head: '<script type="module" src="?tailwindcss/inject-shallow"></script>',
     body: '<div class="test-u-1 test-c-1 test-b-1 test-b-2">Use TailwindCSS in HTML</div>',
     layers: createDefaultLayers('"test-b-1"'),
   });
 
-  const css = getOutputCSS(result);
+  const css = getOutputCSS(files);
   expect(css).toContain(".test-u-1");
   expect(css).toContain(".test-c-1");
   expect(css).toContain(".test-b-1");
   expect(css).not.toContain(".test-b-2");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:<projectRoot>/tests/entry.html::hoisted.layer1.shallow.css": "",

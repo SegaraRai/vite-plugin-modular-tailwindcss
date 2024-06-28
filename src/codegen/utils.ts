@@ -46,3 +46,35 @@ export async function getFilteredModuleImportsRecursive(
 
   return Array.from(visited);
 }
+
+export async function hasCircularDependencies(
+  ctx: PluginContext,
+  source: string,
+  shouldIncludeImport: ImportFilter,
+  visited: string[] = []
+): Promise<boolean> {
+  if (visited.includes(source)) {
+    return true;
+  }
+
+  const newVisited = [...visited, source];
+
+  for (const importId of await getFilteredModuleImports(
+    ctx,
+    source,
+    shouldIncludeImport
+  )) {
+    if (
+      await hasCircularDependencies(
+        ctx,
+        importId,
+        shouldIncludeImport,
+        newVisited
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}

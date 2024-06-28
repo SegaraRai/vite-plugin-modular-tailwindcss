@@ -9,4 +9,10 @@ export interface TestOptions extends Options {
   configure?: (config: InlineConfig) => InlineConfig;
 }
 
-export type TestResult = Record<string, string>;
+export type TestResultFiles = Record<string, string>;
+export type TestResultLog = string | object;
+
+export interface TestResult {
+  files: TestResultFiles;
+  warnings: TestResultLog[];
+}

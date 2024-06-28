@@ -3,7 +3,7 @@ import { runBuild } from "../runner";
 import { getOutputCSS } from "../utils";
 
 it("supports filesystem content", async ({ expect }) => {
-  const result = await runBuild(
+  const { files } = await runBuild(
     [["entry.js", 'import "#tailwindcss/inject";\n']],
     {
       layers: [
@@ -16,14 +16,14 @@ it("supports filesystem content", async ({ expect }) => {
     }
   );
 
-  const code = getOutputCSS(result);
+  const code = getOutputCSS(files);
   expect(code).not.toContain(".test-b-1");
   expect(code).toContain(".test-b-2");
   expect(code).toContain(".test-b-3");
   expect(code).toContain(".test-b-4");
   expect(code).not.toContain(".test-b-5");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
       "[intermediate] tailwindcss:test/entry.js::index.inject.js": "import "\\u0000tailwindcss.global.layer0.css";

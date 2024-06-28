@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import type { Layer } from "../src";
-import type { TestOptions, TestResult } from "./types";
+import type { TestOptions, TestResultFiles } from "./types";
 import { normalizePath } from "vite";
 
 export function fromProjectRoot(path: string): string {
@@ -57,24 +57,24 @@ export function getDefaultTestOptions(): TestOptions {
   return { ...DEFAULT_TEST_OPTIONS };
 }
 
-export function getOutput(result: TestResult): string {
-  return Object.entries(result)
+export function getOutput(files: TestResultFiles): string {
+  return Object.entries(files)
     .filter(([key]) => key.startsWith("[output]"))
     .map(([, value]) => value)
     .join("");
 }
 
-export function getOutputHTML(result: TestResult): string {
-  return result["[output] tests/entry.html"];
+export function getOutputHTML(files: TestResultFiles): string {
+  return files["[output] tests/entry.html"];
 }
 
-export function getOutputCSS(result: TestResult): string {
-  return Object.entries(result)
+export function getOutputCSS(files: TestResultFiles): string {
+  return Object.entries(files)
     .filter(([key]) => key.startsWith("[output]") && key.endsWith(".css"))
     .map(([, value]) => value)
     .join("");
 }
 
-export function getAllCode(result: TestResult): string {
-  return Object.values(result).join("");
+export function getAllCode(files: TestResultFiles): string {
+  return Object.values(files).join("");
 }

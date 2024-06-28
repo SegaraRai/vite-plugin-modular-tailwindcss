@@ -2,7 +2,7 @@ import { it } from "vitest";
 import { runBuild } from "../runner";
 
 it("creates css for each module on module mode", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       `import css from "#tailwindcss";
@@ -27,15 +27,13 @@ export default x + " test-u-2";
   ]);
 
   const modA =
-    result["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"];
+    files["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"];
   const modB =
-    result["[intermediate] tailwindcss:test/b.js::module.layer2.css?inline"];
+    files["[intermediate] tailwindcss:test/b.js::module.layer2.css?inline"];
   const modX =
-    result["[intermediate] tailwindcss:test/x.js::module.layer2.css?inline"];
+    files["[intermediate] tailwindcss:test/x.js::module.layer2.css?inline"];
   const modEntry =
-    result[
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline"
-    ];
+    files["[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline"];
 
   expect(modA).toContain(".test-u-1");
   expect(modA).not.toContain(".test-u-2");
@@ -53,7 +51,7 @@ export default x + " test-u-2";
   expect(modEntry).not.toContain(".test-u-2");
   expect(modEntry).not.toContain(".test-u-9");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",

@@ -1,60 +1,84 @@
 import { it } from "vitest";
 import { runBuild } from "../runner";
+import type { TestCase } from "../types";
+
+const TEST_INPUT_COMPONENTS: TestCase = [
+  [
+    "entry.js",
+    `import css from "#tailwindcss";
+import { a1 } from "./a.js";
+console.log(a1, css);
+`,
+  ],
+  [
+    "a.js",
+    `import { b1 } from "./b.js";
+export const a1 = "test-c-1 " + b1;
+export const a2 = "test-c-9";
+`,
+  ],
+  [
+    "b.js",
+    `import { c1 } from "./c.js";
+export const b1 = "test-c-2 " + c1;
+`,
+  ],
+  [
+    "c.js",
+    `import { a2 } from "./a.js";
+export const c1 = "test-c-3 " + a2;
+`,
+  ],
+];
+
+const TEST_INPUT_UTILITIES: TestCase = [
+  [
+    "entry.js",
+    `import css from "#tailwindcss";
+import { a1 } from "./a.js";
+console.log(a1, css);
+`,
+  ],
+  [
+    "a.js",
+    `import { b1 } from "./b.js";
+export const a1 = "test-u-1 " + b1;
+export const a2 = "test-u-9";
+`,
+  ],
+  [
+    "b.js",
+    `import { c1 } from "./c.js";
+export const b1 = "test-u-2 " + c1;
+`,
+  ],
+  [
+    "c.js",
+    `import { a2 } from "./a.js";
+export const c1 = "test-u-3 " + a2;
+`,
+  ],
+];
 
 it("should handle circular dependencies with hoisted mode", async ({
   expect,
 }) => {
-  const result = await runBuild([
-    [
-      "entry.js",
-      `import css from "#tailwindcss";
-import { a1 } from "./a.js";
-console.log(a1, css);
-`,
-    ],
-    [
-      "a.js",
-      `import { b1 } from "./b.js";
-export const a1 = "test-c-1 " + b1;
-export const a2 = "test-c-9";
-`,
-    ],
-    [
-      "b.js",
-      `import { c1 } from "./c.js";
-export const b1 = "test-c-2 " + c1;
-`,
-    ],
-    [
-      "c.js",
-      `import { a2 } from "./a.js";
-export const c1 = "test-c-3 " + a2;
-`,
-    ],
-  ]);
+  const { files } = await runBuild(TEST_INPUT_COMPONENTS);
 
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-1");
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-2");
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-3");
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-9");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default """,
@@ -205,68 +229,40 @@ export const c1 = "test-c-3 " + a2;
 it("should handle circular dependencies with module mode", async ({
   expect,
 }) => {
-  const result = await runBuild(
-    [
-      [
-        "entry.js",
-        `import css from "#tailwindcss";
-import { a1 } from "./a.js";
-console.log(a1, css);
-`,
-      ],
-      [
-        "a.js",
-        `import { b1 } from "./b.js";
-export const a1 = "test-u-1 " + b1;
-export const a2 = "test-u-9";
-`,
-      ],
-      [
-        "b.js",
-        `import { c1 } from "./c.js";
-export const b1 = "test-u-2 " + c1;
-`,
-      ],
-      [
-        "c.js",
-        `import { a2 } from "./a.js";
-export const c1 = "test-u-3 " + a2;
-`,
-      ],
-    ],
-    {
-      allowCircularModules: true,
-      configure: (config) => {
-        type OutputOptions = Exclude<
-          Required<
-            Required<Required<typeof config>["build"]>["rollupOptions"]
-          >["output"],
-          unknown[] | undefined
-        >;
-        (config.build!.rollupOptions!.output as OutputOptions).preserveModules =
-          false;
-        return config;
-      },
-    }
-  );
+  const { files, warnings } = await runBuild(TEST_INPUT_UTILITIES, {
+    allowCircularModules: true,
+    configure: (config) => {
+      type OutputOptions = Exclude<
+        Required<
+          Required<Required<typeof config>["build"]>["rollupOptions"]
+        >["output"],
+        unknown[] | undefined
+      >;
+      (config.build!.rollupOptions!.output as OutputOptions).preserveModules =
+        false;
+      return config;
+    },
+  });
 
   expect(
-    result["[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline"]
+    files["[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline"]
   ).not.toContain(".test-");
   expect(
-    result["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"]
+    files["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"]
   ).toContain(".test-u-1");
   expect(
-    result["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"]
+    files["[intermediate] tailwindcss:test/a.js::module.layer2.css?inline"]
   ).toContain(".test-u-9");
   expect(
-    result["[intermediate] tailwindcss:test/b.js::module.layer2.css?inline"]
+    files["[intermediate] tailwindcss:test/b.js::module.layer2.css?inline"]
   ).toContain(".test-u-2");
   expect(
-    result["[intermediate] tailwindcss:test/c.js::module.layer2.css?inline"]
+    files["[intermediate] tailwindcss:test/c.js::module.layer2.css?inline"]
   ).toContain(".test-u-3");
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(warnings).toHaveLength(0);
+
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n.test-u-9 {\\n    --test-u: 9px\\n}\\n"",
@@ -329,4 +325,39 @@ export const c1 = "test-u-3 " + a2;
     ",
     }
   `);
+});
+
+it("should warn if allowCircularModules is false", async ({ expect }) => {
+  const { warnings } = await runBuild(TEST_INPUT_UTILITIES, {
+    allowCircularModules: false,
+    layers: [{ mode: "module", code: "@tailwind utilities;" }],
+  });
+
+  expect(warnings).toHaveLength(1);
+  expect(warnings[0]).toMatchInlineSnapshot(`
+    {
+      "id": " test/entry.js",
+      "message": "Circular dependencies have been detected in the module graph. This can potentially lead to runtime errors. To handle circular dependencies and suppress this warning, set the \`allowCircularModules\` option to true in the plugin options.
+    See https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#handling-circular-dependencies for more information.",
+    }
+  `);
+});
+
+it("should not warn if there is no module layer", async ({ expect }) => {
+  const { warnings } = await runBuild(TEST_INPUT_UTILITIES, {
+    allowCircularModules: false,
+    layers: [{ mode: "hoisted", code: "@tailwind utilities;" }],
+  });
+
+  expect(warnings).toHaveLength(0);
+});
+
+it("should not warn if ignored", async ({ expect }) => {
+  const { warnings } = await runBuild(TEST_INPUT_UTILITIES, {
+    allowCircularModules: false,
+    layers: [{ mode: "hoisted", code: "@tailwind utilities;" }],
+    excludes: [/c\.js/],
+  });
+
+  expect(warnings).toHaveLength(0);
 });

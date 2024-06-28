@@ -1,5 +1,9 @@
 import { normalizePath, type Plugin } from "vite";
-import { generateCode, type CodegenContext } from "../codegen";
+import {
+  generateCode,
+  hasCircularDependencies,
+  type CodegenContext,
+} from "../codegen";
 import { isOurId, parseId, resolveId } from "../id";
 import { resolveOptions, type Options } from "../options";
 import { createTailwindCSSGenerator } from "../tailwind";
@@ -25,7 +29,15 @@ function createStore(ctx: PluginContext, options: Options) {
     resolvedOptions.configPath
   );
 
-  return { codegenContext, generateTailwindCSS };
+  const shouldWarnIfCircular =
+    !resolvedOptions.allowCircularModules &&
+    resolvedOptions.layers.some(({ mode }) => mode === "module");
+
+  return {
+    codegenContext,
+    generateTailwindCSS,
+    shouldWarnIfCircular,
+  };
 }
 
 /**
@@ -43,6 +55,8 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
   >();
 
   const htmlMap = new Map<string, string>();
+
+  let seenCircularDependencyWarning = false;
 
   return {
     name: "vite-plugin-modular-tailwindcss-build",
@@ -79,7 +93,30 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
           ctxWeakMap.set(this, store);
         }
 
-        const { codegenContext, generateTailwindCSS } = store;
+        const { codegenContext, generateTailwindCSS, shouldWarnIfCircular } =
+          store;
+
+        if (
+          !seenCircularDependencyWarning &&
+          shouldWarnIfCircular &&
+          parsedId.mode === "top"
+        ) {
+          if (
+            await hasCircularDependencies(
+              this,
+              parsedId.source,
+              codegenContext.shouldIncludeImport
+            )
+          ) {
+            seenCircularDependencyWarning = true;
+
+            this.warn({
+              message: `Circular dependencies have been detected in the module graph. This can potentially lead to runtime errors. To handle circular dependencies and suppress this warning, set the \`allowCircularModules\` option to true in the plugin options.
+See https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-file#handling-circular-dependencies for more information.`,
+              id: parsedId.source,
+            });
+          }
+        }
 
         const [code, moduleSideEffects] = await generateCode(
           this,

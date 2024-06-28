@@ -2,7 +2,7 @@ import { it } from "vitest";
 import { runBuild } from "../runner";
 
 it("hoists and dedupe css with hoisted mode", async ({ expect }) => {
-  const result = await runBuild([
+  const { files } = await runBuild([
     [
       "entry.js",
       `import css from "#tailwindcss";
@@ -27,27 +27,19 @@ export default x + " test-c-2";
   ]);
 
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-1");
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toContain(".test-c-2");
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).toMatch(/\.test-c-9/);
   expect(
-    result[
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"
-    ]
+    files["[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline"]
   ).not.toMatch(/\.test-c-9.+\.test-c-9/);
 
-  expect(result).toMatchInlineSnapshot(`
+  expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:test/a.js::module.layer2.css?inline": "export default """,
