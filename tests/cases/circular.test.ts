@@ -1,3 +1,4 @@
+import { runInNewContext } from "node:vm";
 import { it } from "vitest";
 import { runBuild } from "../runner";
 import type { TestCase } from "../types";
@@ -36,26 +37,26 @@ const TEST_INPUT_UTILITIES: TestCase = [
     "entry.js",
     `import css from "#tailwindcss";
 import { a1 } from "./a.js";
-console.log(a1, css);
+console.log(a1(), css);
 `,
   ],
   [
     "a.js",
     `import { b1 } from "./b.js";
-export const a1 = "test-u-1 " + b1;
-export const a2 = "test-u-9";
+export const a1 = () => "test-u-1 " + b1();
+export const a2 = () => "test-u-9";
 `,
   ],
   [
     "b.js",
     `import { c1 } from "./c.js";
-export const b1 = "test-u-2 " + c1;
+export const b1 = () => "test-u-2 " + c1();
 `,
   ],
   [
     "c.js",
     `import { a2 } from "./a.js";
-export const c1 = "test-u-3 " + a2;
+export const c1 = () => "test-u-3 " + a2();
 `,
   ],
 ];
@@ -306,11 +307,11 @@ it("should handle circular dependencies with module mode", async ({
     const s = "";
     const f = (...p) => p.includes(f) ? "" : f$1(...p, f) + s;
     const css = l0g + l1h + f();
-    const c1 = "test-u-3 " + a2;
-    const b1 = "test-u-2 " + c1;
-    const a1 = "test-u-1 " + b1;
-    const a2 = "test-u-9";
-    console.log(a1, css);
+    const c1 = () => "test-u-3 " + a2();
+    const b1 = () => "test-u-2 " + c1();
+    const a1 = () => "test-u-1 " + b1();
+    const a2 = () => "test-u-9";
+    console.log(a1(), css);
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
@@ -324,6 +325,54 @@ it("should handle circular dependencies with module mode", async ({
     </html>
     ",
     }
+  `);
+
+  const code = `
+let __store;
+const console = {
+  log: (...args) => {
+    __store = args;
+  }
+};
+
+${files["[output] entry.js"]}
+
+__store;
+  `;
+
+  const result = runInNewContext(code, undefined, {
+    timeout: 1000,
+  });
+
+  expect(result).toHaveLength(2);
+  expect(result[1]).toContain(".test-u-1");
+  expect(result[1]).toContain(".test-u-2");
+  expect(result[1]).toContain(".test-u-3");
+  expect(result[1]).toContain(".test-u-9");
+  expect(result[1]).not.toMatch(/\.test-u-1.+\.test-u-1/);
+  expect(result[1]).not.toMatch(/\.test-u-2.+\.test-u-2/);
+  expect(result[1]).not.toMatch(/\.test-u-3.+\.test-u-3/);
+  expect(result[1]).not.toMatch(/\.test-u-9.+\.test-u-9/);
+
+  expect(result).toMatchInlineSnapshot(`
+    [
+      "test-u-1 test-u-2 test-u-3 test-u-9",
+      "/* TailwindCSS Base */
+    /* TailwindCSS Base Backdrop */
+    .test-u-3 {
+        --test-u: 3px
+    }
+    .test-u-2 {
+        --test-u: 2px
+    }
+    .test-u-1 {
+        --test-u: 1px
+    }
+    .test-u-9 {
+        --test-u: 9px
+    }
+    ",
+    ]
   `);
 });
 
