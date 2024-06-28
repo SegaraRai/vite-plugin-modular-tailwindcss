@@ -80,7 +80,7 @@ Follow these steps to quickly set up and use the plugin in your project:
    };
    ```
 
-3. **Reference `vite-plugin-modular-tailwindcss/client` in your `vite-env.d.ts` file:**
+3. **Add the type reference to your `vite-env.d.ts` file:**
 
    This step is only necessary if you are using TypeScript.
 
