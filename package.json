@@ -40,7 +40,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build && tsc -b",
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
     "tag": "tsx scripts/gitTag.ts",

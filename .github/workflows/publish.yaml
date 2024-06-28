@@ -35,10 +35,6 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      # This step is required to pass type-checking
-      - name: Prebuild
-        run: pnpm vite build
-
       - name: Build
         run: pnpm build
 
