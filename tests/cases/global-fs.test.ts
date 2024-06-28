@@ -10,7 +10,7 @@ it("supports filesystem content", async ({ expect }) => {
         {
           mode: "global",
           code: "@tailwind base;",
-          content: ["./fs-test-contents/*.ts"],
+          content: ["./fs-test-contents/*.ts", "!**/*-ignored.ts"],
         },
       ],
     }
@@ -22,6 +22,7 @@ it("supports filesystem content", async ({ expect }) => {
   expect(code).toContain(".test-b-3");
   expect(code).toContain(".test-b-4");
   expect(code).not.toContain(".test-b-5");
+  expect(code).not.toContain(".test-b-7");
 
   expect(files).toMatchInlineSnapshot(`
     {
