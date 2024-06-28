@@ -8,26 +8,26 @@ const TEST_INPUT_COMPONENTS: TestCase = [
     "entry.js",
     `import css from "#tailwindcss";
 import { a1 } from "./a.js";
-console.log(a1, css);
+console.log(a1(), css);
 `,
   ],
   [
     "a.js",
     `import { b1 } from "./b.js";
-export const a1 = "test-c-1 " + b1;
-export const a2 = "test-c-9";
+export const a1 = () => "test-c-1 " + b1();
+export const a2 = () => "test-c-9";
 `,
   ],
   [
     "b.js",
     `import { c1 } from "./c.js";
-export const b1 = "test-c-2 " + c1;
+export const b1 = () => "test-c-2 " + c1();
 `,
   ],
   [
     "c.js",
     `import { a2 } from "./a.js";
-export const c1 = "test-c-3 " + a2;
+export const c1 = () => "test-c-3 " + a2();
 `,
   ],
 ];
@@ -114,8 +114,8 @@ it("should handle circular dependencies with hoisted mode", async ({
     };
     ",
       "[output] _virtual/a.js": "import { b1 } from "./b.js";
-    const a1 = "test-c-1 " + b1;
-    const a2 = "test-c-9";
+    const a1 = () => "test-c-1 " + b1();
+    const a2 = () => "test-c-9";
     export {
       a1,
       a2
@@ -134,7 +134,7 @@ it("should handle circular dependencies with hoisted mode", async ({
     };
     ",
       "[output] _virtual/b.js": "import { c1 } from "./c.js";
-    const b1 = "test-c-2 " + c1;
+    const b1 = () => "test-c-2 " + c1();
     export {
       b1
     };
@@ -152,7 +152,7 @@ it("should handle circular dependencies with hoisted mode", async ({
     };
     ",
       "[output] _virtual/c.js": "import { a2 } from "./a.js";
-    const c1 = "test-c-3 " + a2;
+    const c1 = () => "test-c-3 " + a2();
     export {
       c1
     };
@@ -171,7 +171,7 @@ it("should handle circular dependencies with hoisted mode", async ({
     ",
       "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
     import { a1 } from "./a.js";
-    console.log(a1, css);
+    console.log(a1(), css);
     ",
       "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n.test-c-2 {\\n    --test-c: 2px\\n}\\n.test-c-3 {\\n    --test-c: 3px\\n}\\n.test-c-9 {\\n    --test-c: 9px\\n}\\n";
     export {
