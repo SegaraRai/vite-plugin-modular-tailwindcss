@@ -327,6 +327,9 @@ it("should handle circular dependencies with module mode", async ({
     }
   `);
 
+  // Run the code
+  // This part must be executed after the snapshot test to avoid security issues
+
   const code = `
 let __store;
 const console = {
