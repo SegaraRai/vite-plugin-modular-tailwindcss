@@ -1,5 +1,11 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.2.4
+
+### Patch Changes
+
+- 2e1e634: Warn when circular dependencies found and may not handled correctly.
+
 ## 0.2.3
 
 ### Patch Changes
