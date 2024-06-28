@@ -12,6 +12,7 @@
   },
   "keywords": [
     "tailwindcss",
+    "vite",
     "vite-plugin"
   ],
   "files": [
