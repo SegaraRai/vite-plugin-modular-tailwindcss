@@ -15,6 +15,9 @@
     "vite",
     "vite-plugin"
   ],
+  "publishConfig": {
+    "provenance": true
+  },
   "files": [
     "dist",
     "LICENSE",
