@@ -1,5 +1,15 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.3.0
+
+### Minor Changes
+
+- 3b91ce6: BREAKING CHANGE: Introduce a new `global` mode that automatically retrieves content and rename the existing `global` mode to `globalFilesystem` mode.
+
+### Patch Changes
+
+- edec0ad: Set the `provenance` field in `package.json` to prevent accidentally publishing the package on a local machine.
+
 ## 0.2.4
 
 ### Patch Changes
