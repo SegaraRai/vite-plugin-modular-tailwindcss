@@ -48,7 +48,7 @@ jobs:
         run: |
           cd playground
           docker compose up -d
-          pnpm test:container
+          pnpm test
           docker compose down
 
       - name: Get Next Package Version

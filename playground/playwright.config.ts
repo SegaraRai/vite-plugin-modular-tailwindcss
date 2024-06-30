@@ -6,15 +6,11 @@ const PORT = 5188;
 const CI = !!env.CI;
 const DEV = env.PLAYGROUND_ENV !== "preview";
 
-const REMOTE_WS_ENDPOINT = env.PLAYWRIGHT_REMOTE_WS_ENDPOINT;
-const REMOTE_HOSTNAME = env.PLAYWRIGHT_REMOTE_HOSTNAME;
-const USE_REMOTE = !!REMOTE_WS_ENDPOINT && !!REMOTE_HOSTNAME;
-
 console.info(
-  `[playwright] Running in ${DEV ? "development" : "preview"} mode (${CI ? "CI" : "local"}, ${USE_REMOTE ? "remote" : "local"} browser)`
+  `[playwright] Running in ${DEV ? "development" : "preview"} mode (${CI ? "CI" : "local"})`
 );
 
-const VITE_SERVER_ARGS = `--port ${PORT}${USE_REMOTE ? " --host" : ""}`;
+const VITE_SERVER_ARGS = `--port ${PORT} --host`;
 
 export default defineConfig({
   testDir: "tests",
@@ -24,35 +20,26 @@ export default defineConfig({
   workers: CI ? 1 : undefined,
   reporter: CI ? "github" : "list",
   use: {
-    baseURL: USE_REMOTE
-      ? `http://${REMOTE_HOSTNAME}:${PORT}`
-      : `http://localhost:${PORT}`,
+    // see docker-compose.yml
+    baseURL: `http://host.docker.internal:${PORT}`,
     trace: "on-first-retry",
   },
   projects: [
-    USE_REMOTE
-      ? {
-          name: "remote",
-          use: {
-            ...devices["Desktop Chrome"],
-            viewport: { width: 640, height: 360 },
-            deviceScaleFactor: 1,
-            connectOptions: {
-              wsEndpoint: REMOTE_WS_ENDPOINT,
-            },
-          },
-          // We don't want platform suffixes in snapshot paths
-          snapshotPathTemplate:
-            "{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{ext}",
-        }
-      : {
-          name: "chromium",
-          use: {
-            ...devices["Desktop Chrome"],
-            viewport: { width: 640, height: 360 },
-            deviceScaleFactor: 1,
-          },
+    {
+      name: "remote",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 640, height: 360 },
+        deviceScaleFactor: 1,
+        connectOptions: {
+          // see docker-compose.yml
+          wsEndpoint: "ws://localhost:5375",
         },
+      },
+      // We don't want platform suffixes in snapshot paths
+      snapshotPathTemplate:
+        "{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
+    },
   ],
   webServer: {
     command: DEV
