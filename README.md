@@ -35,17 +35,17 @@ A more efficient approach is to generate TailwindCSS styles on a per-component b
 This method allows for a modular and tree-shakable design, optimizing performance and maintainability.
 This plugin addresses this need by enabling the generation of TailwindCSS styles in a modular manner, making it ideal for creating web components and UI libraries.
 
-To avoid duplication of common CSS such as `@tailwind base;`, the plugin supports three aggregation levels (global, hoist, and module) for each layer, ensuring efficient and organized style management.
+To avoid duplication of common CSS such as `@tailwind base;`, the plugin supports three aggregation levels (global / globalFilesystem, hoist, and module) for each layer, ensuring efficient and organized style management.
 
 Prior Art: [UnoCSS shadow-dom mode](https://unocss.dev/integrations/vite#shadow-dom)
 
 ## Features
 
-- **Modular CSS Generation**: Generate TailwindCSS styles on a per-layer basis with three different modes (`global`, `hoisted`, and `module`), providing flexibility and efficiency.
+- **Modular CSS Generation**: Generate TailwindCSS styles on a per-layer basis with four different modes (`global`, `globalFilesystem`, `hoisted`, and `module`), providing flexibility and efficiency.
 - **Layer-aware Hierarchical Design**: Prevents order-dependent issues by generating and combining CSS layer by layer, ensuring consistent and predictable styling.
 - **Optimized for Vite**: Supports minification and extraction of generated CSS into separate files, enhancing performance and maintainability.
 - **Flexible Configuration**: Easily configure the plugin to include or exclude specific files or directories, allowing for precise control over which components generate TailwindCSS styles.
-- **Virtual Module Loading**: Unlike regular TailwindCSS, this plugin can load virtual modules in `module` mode and `hoisted` mode, enabling dynamic CSS handling and enhanced flexibility.
+- **Virtual Module Loading**: Unlike regular TailwindCSS, this plugin can load virtual modules except for the `globalFilesystem` mode, enabling dynamic CSS handling and enhanced flexibility.
 
 ## Quick Start
 
@@ -159,7 +159,7 @@ If `apply` is not specified, the layer will be included at both build and develo
 
 ### Layer Modes
 
-A layer can be generated in one of three modes: `global`, `hoisted`, or `module`.
+A layer can be generated in one of four modes: `global`, `globalFilesystem`, `hoisted`, or `module`.
 
 > [!IMPORTANT]  
 > Layer modes are only available during the build process and are not available during development.
