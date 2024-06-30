@@ -1,8 +1,8 @@
+import fg from "fast-glob";
 import fs from "node:fs";
 import { extname } from "node:path";
-import fg from "fast-glob";
-import type { PluginContext } from "../utils";
 import type { ContentSpec } from "../options";
+import type { PluginContext } from "../utils";
 
 export interface ResolvedContent {
   content: string;

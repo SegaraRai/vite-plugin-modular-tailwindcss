@@ -1,5 +1,5 @@
-import { env } from "node:process";
 import { defineConfig, devices } from "@playwright/test";
+import { env } from "node:process";
 
 const PORT = 5188;
 

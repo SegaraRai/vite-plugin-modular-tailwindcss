@@ -54,6 +54,7 @@
     "@vitest/ui": "^1.6.0",
     "eslint": "^9.6.0",
     "prettier": "^3.3.2",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "tailwindcss": "^3.4.4",
     "taze": "^0.13.9",
     "tsx": "^4.15.8",

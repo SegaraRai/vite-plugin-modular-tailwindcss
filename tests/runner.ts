@@ -1,8 +1,8 @@
 import { build, normalizePath } from "vite";
+import type { PluginContext } from "../src/utils";
 import { loadPlugin } from "./loadPlugin";
 import type { TestCase, TestOptions, TestResult, TestResultLog } from "./types";
 import { getDefaultTestOptions, redactProjectRoot } from "./utils";
-import type { PluginContext } from "../src/utils";
 
 function isMTWId(id: string): boolean {
   return id.includes("tailwindcss.") || id.includes("tailwindcss:");

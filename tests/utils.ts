@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
+import { normalizePath } from "vite";
 import type { Layer } from "../src";
 import type { TestOptions, TestResultFiles } from "./types";
-import { normalizePath } from "vite";
 
 export function fromProjectRoot(path: string): string {
   return fileURLToPath(new URL("../" + path, import.meta.url));
