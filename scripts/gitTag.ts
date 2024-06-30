@@ -10,8 +10,8 @@ async function gitTagExists(tag: string, remote: boolean): Promise<boolean> {
   return !!stdout.toString().trim();
 }
 
-const packageJson = JSON.parse(await readFile("package.json", "utf8"));
-const tagName = `v${packageJson.version}`;
+const pkg = JSON.parse(await readFile("package.json", "utf8"));
+const tagName = `v${pkg.version}`;
 
 if (
   (await gitTagExists(tagName, false)) ||

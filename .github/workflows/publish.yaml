@@ -51,10 +51,17 @@ jobs:
           pnpm test:container
           docker compose down
 
+      - name: Get Next Package Version
+        id: version
+        run: |
+          echo "PACKAGE_RELEASE_VERSION=$(pnpm --silent next-version)" >> "$GITHUB_OUTPUT"
+
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
         with:
-          publish: pnpm tag-and-publish --provenance
+          title: "Release v${{ steps.version.outputs.PACKAGE_RELEASE_VERSION }}"
+          commit: "release: v${{ steps.version.outputs.PACKAGE_RELEASE_VERSION }}"
+          publish: pnpm tag-and-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

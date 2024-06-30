@@ -14,6 +14,8 @@ dist-ssr
 
 test-results
 
+changeset-status.json
+
 # Editor directories and files
 .idea
 .DS_Store
