@@ -1,6 +1,6 @@
 export type ContentSpec = string | { raw: string; extension: string };
 
-export type LayerMode = "global" | "hoisted" | "module";
+export type LayerMode = "globalFilesystem" | "global" | "hoisted" | "module";
 
 export interface LayerBase {
   mode: LayerMode;
@@ -10,6 +10,11 @@ export interface LayerBase {
 
 export interface LayerGlobal extends LayerBase {
   mode: "global";
+  code: string;
+}
+
+export interface LayerGlobalFilesystem extends LayerBase {
+  mode: "globalFilesystem";
   code: string;
   content?: readonly ContentSpec[];
 }
@@ -22,12 +27,24 @@ export interface LayerModule extends LayerBase {
   mode: "module";
 }
 
-export type Layer = LayerGlobal | LayerHoisted | LayerModule;
+export type Layer =
+  | LayerGlobal
+  | LayerGlobalFilesystem
+  | LayerHoisted
+  | LayerModule;
 
+/**
+ * Defines which modules should be excluded from processing.
+ *
+ * For `hoisted` and `module` layers, `resolvedId` refers to the ID of a module that is transitively imported from the entry module, which contains `import "#tailwindcss";`.
+ * In these layers, `importerId` is always provided, and the entry modules cannot be excluded.
+ *
+ * For `global` layers, `resolvedId` refers to the ID of a module that appears in the result of `getModuleIds()`, and `importerId` is always `null`.
+ */
 export type ExcludeSpec =
   | string
   | RegExp
-  | ((resolvedId: string, importerId: string) => boolean);
+  | ((resolvedId: string, importerId: string | null) => boolean);
 
 export interface Options {
   /**
@@ -59,6 +76,8 @@ export interface Options {
   layers?: readonly Layer[];
   /**
    * The Rollup IDs (filepaths and virtual modules) that should be excluded from processing.
+   *
+   * See {@link ExcludeSpec} for details.
    *
    * @default
    * [

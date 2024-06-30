@@ -5,7 +5,7 @@ import {
   type TailwindModuleIdTop,
 } from "../id";
 import type { Layer } from "../options";
-import { type PluginContext } from "../utils";
+import { assertsNever, type PluginContext } from "../utils";
 import type { CodegenContext } from "./context";
 import { getFilteredModuleImports } from "./utils";
 
@@ -70,6 +70,7 @@ export async function generateTopJSCode(
 
     switch (layer.mode) {
       case "global":
+      case "globalFilesystem":
         await addImport(
           { mode: "global", ext: "css", layerIndex, source: null },
           `l${layerIndex}g`,
@@ -99,6 +100,9 @@ export async function generateTopJSCode(
           allowCircularModules
         );
         break;
+
+      default:
+        assertsNever(layer);
     }
   }
 

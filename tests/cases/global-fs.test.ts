@@ -8,7 +8,7 @@ it("supports filesystem content", async ({ expect }) => {
     {
       layers: [
         {
-          mode: "global",
+          mode: "globalFilesystem",
           code: "@tailwind base;",
           content: ["./fs-test-contents/*.ts", "!**/*-ignored.ts"],
         },

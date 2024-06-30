@@ -2,7 +2,7 @@ import type { ExcludeSpec } from "../options";
 
 export function shouldExclude(
   resolvedId: string,
-  importerId: string,
+  importerId: string | null,
   excludes: readonly ExcludeSpec[]
 ): boolean {
   return excludes.some((exclude) => {

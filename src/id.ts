@@ -1,3 +1,5 @@
+import { assertsNever } from "./utils";
+
 export interface TailwindModuleIdTop {
   readonly mode: "top";
   readonly ext: "js";
@@ -7,6 +9,10 @@ export interface TailwindModuleIdTop {
   readonly source: string;
 }
 
+/**
+ * `global` and `globalFilesystem` layers are both represented by this type. \
+ * They are distinguished after resolving the layer by `layerIndex`.
+ */
 export interface TailwindModuleIdGlobal {
   readonly mode: "global";
   readonly ext: "css";
@@ -232,6 +238,9 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
       }
 
       throw new Error(`LogicError: Module layers must be a CSS or JS file`);
+
+    default:
+      throw new Error(`LogicError: Unknown mode ${mode}`);
   }
 }
 
@@ -261,5 +270,8 @@ export function stringifyId(id: TailwindModuleId, inject: boolean): string {
       return id.ext === "js"
         ? `${prefix}module.layer${id.layerIndex}${id.shallow ? ".shallow" : ""}${inject ? ".inject" : ""}.js`
         : `${prefix}module.layer${id.layerIndex}.css${!inject ? "?inline" : ""}`;
+
+    default:
+      assertsNever(id);
   }
 }

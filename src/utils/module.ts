@@ -43,3 +43,24 @@ export async function getModuleImports(
   const moduleInfo = await resolveModuleInfo(ctx, source, importer, true);
   return moduleInfo.importedIds;
 }
+
+export async function waitForModuleIdsToBeStable(
+  ctx: PluginContext,
+  shouldInclude: (resolvedId: string) => boolean
+): Promise<void> {
+  for (;;) {
+    const moduleIds = Array.from(ctx.getModuleIds());
+    for (const resolvedId of moduleIds) {
+      if (!shouldInclude(resolvedId)) {
+        continue;
+      }
+
+      await resolveModuleInfo(ctx, resolvedId, undefined, true);
+    }
+
+    const afterCount = Array.from(ctx.getModuleIds()).length;
+    if (moduleIds.length === afterCount) {
+      break;
+    }
+  }
+}

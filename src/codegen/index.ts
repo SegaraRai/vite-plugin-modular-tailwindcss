@@ -1,7 +1,11 @@
 import type { TailwindModuleId } from "../id";
 import type { ContentSpec, Layer, LayerMode } from "../options";
 import type { createTailwindCSSGenerator } from "../tailwind";
-import type { PluginContext } from "../utils";
+import {
+  assertsNever,
+  waitForModuleIdsToBeStable,
+  type PluginContext,
+} from "../utils";
 import type { CodegenContext } from "./context";
 import { generateModuleJSCode, generateTopJSCode } from "./js";
 import { getFilteredModuleImportsRecursive } from "./utils";
@@ -16,15 +20,21 @@ function getExtension(source: string): string {
 function getLayer<T extends LayerMode>(
   layers: readonly Layer[],
   layerIndex: number,
-  mode: T
+  mode: T | readonly T[]
 ): Extract<Layer, { mode: T }> {
   const layer = layers[layerIndex];
   if (!layer) {
     throw new Error(`LogicError: Layer ${layerIndex} not found`);
   }
 
-  if (layer.mode !== mode) {
-    throw new Error(`LogicError: Layer ${layerIndex} is not a ${mode} layer`);
+  const isModeCorrect =
+    typeof mode === "string"
+      ? layer.mode === mode
+      : (mode as readonly string[]).includes(layer.mode);
+  if (!isModeCorrect) {
+    throw new Error(
+      `LogicError: Layer ${layerIndex} is expected to be ${mode} mode but is ${layer.mode} mode`
+    );
   }
 
   return layer as Extract<Layer, { mode: T }>;
@@ -104,14 +114,56 @@ export async function generateCode(
     }
 
     case "global": {
-      const layer = getLayer(layers, parsedId.layerIndex, "global");
-      const globalCode = await generateTailwindCSS(
-        layer.mode,
-        layer.code,
-        layer.content ?? null,
-        globCWD
-      );
-      return [globalCode, false];
+      const layer = getLayer(layers, parsedId.layerIndex, [
+        "global",
+        "globalFilesystem",
+      ]);
+
+      switch (layer.mode) {
+        case "global": {
+          await waitForModuleIdsToBeStable(ctx, (resolvedId: string): boolean =>
+            codegenContext.shouldIncludeImport(resolvedId, null)
+          );
+
+          const allContents: ContentSpec[] = [];
+          const allModuleIds = Array.from(ctx.getModuleIds()).filter(
+            (resolvedId) => codegenContext.shouldIncludeImport(resolvedId, null)
+          );
+          for (const id of allModuleIds) {
+            allContents.push({
+              raw: await getTailwindCSSContent(id),
+              extension: getExtension(id),
+            });
+          }
+
+          const globalCode = await generateTailwindCSS(
+            layer.mode,
+            layer.code,
+            allContents,
+            globCWD
+          );
+          return [globalCode, false];
+        }
+
+        case "globalFilesystem": {
+          const content = layer.content ?? null;
+          const globalCode = await generateTailwindCSS(
+            layer.mode,
+            layer.code,
+            content,
+            globCWD
+          );
+          return [globalCode, false];
+        }
+
+        default:
+          assertsNever(layer);
+      }
+
+      throw new Error(`LogicError: Unknown global layer mode ${layer.mode}`);
     }
+
+    default:
+      assertsNever(mode);
   }
 }

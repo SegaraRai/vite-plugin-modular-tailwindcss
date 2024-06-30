@@ -1,11 +1,6 @@
 import { it } from "vitest";
 import { runBuild } from "../runner";
-import {
-  createDefaultLayers,
-  getAllCode,
-  getOutput,
-  getOutputHTML,
-} from "../utils";
+import { getAllCode, getOutput, getOutputHTML } from "../utils";
 
 it("generates inline css with no used classes", async ({ expect }) => {
   const { files } = await runBuild([
@@ -260,17 +255,12 @@ it("generates inline css with an component class", async ({ expect }) => {
 });
 
 it("generates inline css with an base class", async ({ expect }) => {
-  const { files } = await runBuild(
+  const { files } = await runBuild([
     [
-      [
-        "entry.js",
-        'import css from "#tailwindcss";\nconst X = "---";\nconsole.log(X, css);\n',
-      ],
+      "entry.js",
+      'import css from "#tailwindcss";\nconst X = "test-b-1";\nconsole.log(X, css);\n',
     ],
-    {
-      layers: createDefaultLayers('"test-b-1"'),
-    }
-  );
+  ]);
 
   expect(getOutputHTML(files)).not.toContain("stylesheet");
 
@@ -303,7 +293,7 @@ it("generates inline css with an base class", async ({ expect }) => {
     };
     ",
       "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "---";
+    const X = "test-b-1";
     console.log(X, css);
     ",
       "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = "";
@@ -349,17 +339,12 @@ it("generates inline css with an base class", async ({ expect }) => {
 });
 
 it("generates inline css with all layers", async ({ expect }) => {
-  const { files } = await runBuild(
+  const { files } = await runBuild([
     [
-      [
-        "entry.js",
-        'import css from "#tailwindcss";\nconst X = "test-u-1 test-c-1 ---";\nconsole.log(X, css);\n',
-      ],
+      "entry.js",
+      'import css from "#tailwindcss";\nconst X = "test-u-1 test-c-1 test-b-1";\nconsole.log(X, css);\n',
     ],
-    {
-      layers: createDefaultLayers('"test-b-1"'),
-    }
-  );
+  ]);
 
   expect(getOutputHTML(files)).not.toContain("stylesheet");
 
@@ -392,7 +377,7 @@ it("generates inline css with all layers", async ({ expect }) => {
     };
     ",
       "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "test-u-1 test-c-1 ---";
+    const X = "test-u-1 test-c-1 test-b-1";
     console.log(X, css);
     ",
       "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n";
@@ -438,12 +423,9 @@ it("generates inline css with all layers", async ({ expect }) => {
 });
 
 it("works with side-effect only import", async ({ expect }) => {
-  const { files } = await runBuild(
-    [["entry.js", 'import "#tailwindcss";\n"test-u-1 test-c-1 ---";\n']],
-    {
-      layers: createDefaultLayers('"test-b-1"'),
-    }
-  );
+  const { files } = await runBuild([
+    ["entry.js", 'import "#tailwindcss";\n"test-u-1 test-c-1 test-b-1";\n'],
+  ]);
 
   expect(getOutputHTML(files)).not.toContain("stylesheet");
 

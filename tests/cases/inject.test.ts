@@ -1,6 +1,6 @@
 import { it } from "vitest";
 import { runBuild } from "../runner";
-import { createDefaultLayers, getOutputCSS, getOutputHTML } from "../utils";
+import { getOutputCSS, getOutputHTML } from "../utils";
 
 it("generates inject css with no used classes", async ({ expect }) => {
   const { files } = await runBuild([
@@ -184,17 +184,12 @@ it("generates inject css with an component class", async ({ expect }) => {
 });
 
 it("generates inject css with an base class", async ({ expect }) => {
-  const { files } = await runBuild(
+  const { files } = await runBuild([
     [
-      [
-        "entry.js",
-        'import "#tailwindcss/inject";\nconst X = "---";\nconsole.log(X);\n',
-      ],
+      "entry.js",
+      'import "#tailwindcss/inject";\nconst X = "test-b-1";\nconsole.log(X);\n',
     ],
-    {
-      layers: createDefaultLayers('"test-b-1"'),
-    }
-  );
+  ]);
 
   expect(getOutputHTML(files)).toContain("stylesheet");
 
@@ -226,7 +221,7 @@ it("generates inject css with an base class", async ({ expect }) => {
       "[output] _virtual/entry.js": "/* empty css                               */
     import "./entry.js__hoisted.layer1.css.js";
     import "./entry.js__module.layer2.css.js";
-    const X = "---";
+    const X = "test-b-1";
     console.log(X);
     ",
       "[output] _virtual/entry.js__hoisted.layer1.css.js": "
@@ -252,17 +247,12 @@ it("generates inject css with an base class", async ({ expect }) => {
 });
 
 it("generates inject css with all layers", async ({ expect }) => {
-  const { files } = await runBuild(
+  const { files } = await runBuild([
     [
-      [
-        "entry.js",
-        'import "#tailwindcss/inject";\nconst X = "test-u-1 test-c-1 ---";\nconsole.log(X);\n',
-      ],
+      "entry.js",
+      'import "#tailwindcss/inject";\nconst X = "test-u-1 test-c-1 test-b-1";\nconsole.log(X);\n',
     ],
-    {
-      layers: createDefaultLayers('"test-b-1"'),
-    }
-  );
+  ]);
 
   expect(getOutputHTML(files)).toContain("stylesheet");
 
@@ -294,7 +284,7 @@ it("generates inject css with all layers", async ({ expect }) => {
       "[output] _virtual/entry.js": "/* empty css                               */
     /* empty css                             */
     /* empty css                            */
-    const X = "test-u-1 test-c-1 ---";
+    const X = "test-u-1 test-c-1 test-b-1";
     console.log(X);
     ",
       "[output] _virtual/entry.js__hoisted.layer1.css": ".test-c-1 {

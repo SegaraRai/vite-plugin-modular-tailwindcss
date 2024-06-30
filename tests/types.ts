@@ -1,4 +1,4 @@
-import type { InlineConfig } from "vite";
+import type { PluginOption } from "vite";
 import type { Options } from "../src";
 
 export type TestCase = [filename: string, content: string][];
@@ -6,7 +6,9 @@ export type TestCase = [filename: string, content: string][];
 export interface TestOptions extends Options {
   head?: string;
   body?: string;
-  configure?: (config: InlineConfig) => InlineConfig;
+  noPreserveModules?: boolean;
+  prePlugins?: readonly PluginOption[];
+  postPlugins?: readonly PluginOption[];
 }
 
 export type TestResultFiles = Record<string, string>;

@@ -18,7 +18,10 @@ function createStore(ctx: PluginContext, options: Options) {
 
   const codegenContext: CodegenContext = {
     options: resolvedOptions,
-    shouldIncludeImport: (resolvedId: string, importerId: string): boolean =>
+    shouldIncludeImport: (
+      resolvedId: string,
+      importerId: string | null
+    ): boolean =>
       !resolvedId.startsWith("\0vite/") &&
       !isOurId(resolvedId) &&
       !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),

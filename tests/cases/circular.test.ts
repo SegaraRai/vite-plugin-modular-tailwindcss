@@ -232,17 +232,7 @@ it("should handle circular dependencies with module mode", async ({
 }) => {
   const { files, warnings } = await runBuild(TEST_INPUT_UTILITIES, {
     allowCircularModules: true,
-    configure: (config) => {
-      type OutputOptions = Exclude<
-        Required<
-          Required<Required<typeof config>["build"]>["rollupOptions"]
-        >["output"],
-        unknown[] | undefined
-      >;
-      (config.build!.rollupOptions!.output as OutputOptions).preserveModules =
-        false;
-      return config;
-    },
+    noPreserveModules: true,
   });
 
   expect(

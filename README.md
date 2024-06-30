@@ -16,6 +16,7 @@ This project provides a Vite plugin for integrating TailwindCSS in a modular fas
        - [Global Mode](#global-mode)
        - [Hoisted Mode](#hoisted-mode)
        - [Module Mode](#module-mode)
+       - [Global Filesystem Mode](#global-filesystem-mode)
    - [Handling Circular Dependencies](#handling-circular-dependencies)
 5. [CSS Injection](#css-injection)
    - [Injection in JavaScript](#injection-in-javascript)
@@ -44,6 +45,7 @@ Prior Art: [UnoCSS shadow-dom mode](https://unocss.dev/integrations/vite#shadow-
 - **Layer-aware Hierarchical Design**: Prevents order-dependent issues by generating and combining CSS layer by layer, ensuring consistent and predictable styling.
 - **Optimized for Vite**: Supports minification and extraction of generated CSS into separate files, enhancing performance and maintainability.
 - **Flexible Configuration**: Easily configure the plugin to include or exclude specific files or directories, allowing for precise control over which components generate TailwindCSS styles.
+- **Virtual Module Loading**: Unlike regular TailwindCSS, this plugin can load virtual modules in `module` mode and `hoisted` mode, enabling dynamic CSS handling and enhanced flexibility.
 
 ## Quick Start
 
@@ -165,11 +167,13 @@ A layer can be generated in one of three modes: `global`, `hoisted`, or `module`
 
 ### Global Mode
 
-The `global` mode scans the files specified in the `content` option and generates the CSS for the specified layer.
-This is similar to `import css from "./myTailwind.css";`, where `myTailwind.css` contains `@tailwind` directives.
+New in version 0.3.0.
 
-The `content` can be set either in the layer options or in the TailwindCSS configuration file.
-It is not possible to set the `content` automatically, as it must be generated before the list of codes used by Vite becomes available.
+The `global` mode scans the loaded modules (including virtual modules if not excluded) and generates the CSS for the specified layer.
+
+By delaying the generation of CSS until the results of Rollup's [getModuleIds](https://rollupjs.org/plugin-development/#this-getmoduleids) become stable, a list of referenced modules can be obtained.
+Rollup is asked to resolve the dependencies of all loaded modules (excluding those that are not in `excludes`), and the list of module IDs is retrieved again to check for changes.
+By repeating this process until there are no changes, a complete list of referenced modules is obtained.
 
 ### Hoisted Mode
 
@@ -186,6 +190,18 @@ The difference between the `hoisted` and `module` modes is that in the `module` 
 > If you have circular dependencies, using the `module` mode may result in a `ReferenceError` during runtime.
 > Refer to the [Handling Circular Dependencies](#handling-circular-dependencies) section for more information.
 
+### Global Filesystem Mode
+
+The `globalFilesystem` mode scans the files specified in the `content` option and generates the CSS for the specified layer.
+This is similar to `import css from "./myTailwind.css";`, where `myTailwind.css` contains `@tailwind` directives.
+
+The `content` can be set either in the layer options or in the TailwindCSS configuration file.
+
+Prior to version 0.3.0, the `globalFilesystem` mode was named `global` mode.
+
+> [!NOTE]  
+> The `globalFilesystem` mode does not support loading virtual modules.
+
 ## Handling Circular Dependencies
 
 While it's best to avoid circular dependencies, this plugin does support them.
@@ -194,7 +210,9 @@ If the module importing `#tailwindcss` or `#tailwindcss/inject` has no circular 
 If circular dependencies do exist, the necessary action depends on the layer mode you're using:
 
 - **Global or Hoisted Mode**: Dependencies are resolved at build time, so no action is needed.
-- **Module Mode**: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
+- \*\*
+
+Module Mode\*\*: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
 
 Even one layer in `module` mode (which is the default configuration) can cause this issue.
 To address circular dependency issues in module mode, set the `allowCircularModules` option to `true`.

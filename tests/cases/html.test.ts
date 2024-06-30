@@ -1,8 +1,10 @@
 import { it } from "vitest";
 import { runBuild } from "../runner";
-import { createDefaultLayers, getDefaultHead, getOutputCSS } from "../utils";
+import { getDefaultHead, getOutputCSS } from "../utils";
 
-it("generates css which only contains rules for HTML", async ({ expect }) => {
+it("generates css which only contains rules for HTML except global layer", async ({
+  expect,
+}) => {
   const { files } = await runBuild(
     [
       [
@@ -14,8 +16,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
       head:
         getDefaultHead() +
         '<script type="module" src="?tailwindcss/inject-shallow"></script>',
-      body: '<div class="test-u-1 test-c-1 test-b-1 test-b-2">Use TailwindCSS in HTML</div>',
-      layers: createDefaultLayers('"test-b-1"'),
+      body: '<div class="test-u-1 test-c-1 test-b-1">Use TailwindCSS in HTML</div>',
     }
   );
 
@@ -23,15 +24,14 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
   expect(css).toContain(".test-u-1");
   expect(css).toContain(".test-c-1");
   expect(css).toContain(".test-b-1");
-  expect(css).not.toContain(".test-b-2");
   expect(css).not.toContain(".test-u-9");
   expect(css).not.toContain(".test-c-9");
-  expect(css).not.toContain(".test-b-9");
+  expect(css).toContain(".test-b-9");
 
   expect(files).toMatchInlineSnapshot(`
     {
       "[intermediate] tailwindcss.global.layer0.css": "",
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n.test-b-9 {\\n    --test-b: 9px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[intermediate] tailwindcss:<projectRoot>/tests/entry.html::hoisted.layer1.shallow.css": "",
       "[intermediate] tailwindcss:<projectRoot>/tests/entry.html::index.shallow.inject.js": "import "\\u0000tailwindcss.global.layer0.css";
     import "\\u0000tailwindcss:<projectRoot>/tests/entry.html::hoisted.layer1.shallow.css";
@@ -53,10 +53,13 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
       "[output] _virtual/_tailwindcss.global.layer0.css": ".test-b-1 {
         --test-b: 1px
     }
+    .test-b-9 {
+        --test-b: 9px
+    }
     /* TailwindCSS Base */
     /* TailwindCSS Base Backdrop */
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css2.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[output] _virtual/_tailwindcss.global.layer0.css2.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n.test-b-9 {\\n    --test-b: 9px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
@@ -116,7 +119,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
     </head>
       <body>
         Only for testing purposes.
-      <div class="test-u-1 test-c-1 test-b-1 test-b-2">Use TailwindCSS in HTML</div></body>
+      <div class="test-u-1 test-c-1 test-b-1">Use TailwindCSS in HTML</div></body>
     </html>
     ",
     }
@@ -126,8 +129,7 @@ it("generates css which only contains rules for HTML", async ({ expect }) => {
 it("generates css without entry js", async ({ expect }) => {
   const { files } = await runBuild([], {
     head: '<script type="module" src="?tailwindcss/inject-shallow"></script>',
-    body: '<div class="test-u-1 test-c-1 test-b-1 test-b-2">Use TailwindCSS in HTML</div>',
-    layers: createDefaultLayers('"test-b-1"'),
+    body: '<div class="test-u-1 test-c-1 test-b-1">Use TailwindCSS in HTML</div>',
   });
 
   const css = getOutputCSS(files);
@@ -176,7 +178,7 @@ it("generates css without entry js", async ({ expect }) => {
     </head>
       <body>
         Only for testing purposes.
-      <div class="test-u-1 test-c-1 test-b-1 test-b-2">Use TailwindCSS in HTML</div></body>
+      <div class="test-u-1 test-c-1 test-b-1">Use TailwindCSS in HTML</div></body>
     </html>
     ",
     }

@@ -17,17 +17,11 @@ export function redactProjectRoot(code: string): string {
   );
 }
 
-export function createDefaultLayers(globalContent: string = ""): Layer[] {
+export function createDefaultLayers(): Layer[] {
   return [
     {
       mode: "global",
       code: "@tailwind base;",
-      content: [
-        {
-          raw: globalContent,
-          extension: "html",
-        },
-      ],
     },
     {
       mode: "hoisted",
@@ -46,7 +40,13 @@ const DEFAULT_TEST_OPTIONS: TestOptions = {
   layers: createDefaultLayers(),
   excludes: [],
   globCWD: fromProjectRoot("./tests"),
+  allowCircularModules: false,
+  // test options
   head: DEFAULT_HEAD,
+  body: "",
+  noPreserveModules: false,
+  prePlugins: [],
+  postPlugins: [],
 };
 
 export function getDefaultHead(): string {
