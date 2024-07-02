@@ -48,8 +48,6 @@ export async function generateCode(
 ): Promise<[code: string, hasSideEffects: boolean]> {
   const { mode } = parsedId;
   const {
-    getAllModuleIds,
-    shouldIncludeImport,
     warn,
     options: { layers, globCWD },
   } = codegenContext;
