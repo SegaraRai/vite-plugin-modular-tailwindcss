@@ -6,7 +6,7 @@ import type { CodegenContext } from "./context";
 import { generateModuleJSCode, generateTopJSCode } from "./js";
 import {
   getFilteredModuleImportsRecursive,
-  waitForModuleIdsToBeStable,
+  waitAndResolveAllModuleIds,
 } from "./utils";
 
 export * from "./context";
@@ -121,16 +121,9 @@ export async function generateCode(
 
       switch (layer.mode) {
         case "global": {
-          await waitForModuleIdsToBeStable(
-            codegenContext,
-            (resolvedId: string): boolean =>
-              shouldIncludeImport(resolvedId, null)
-          );
+          const allModuleIds = await waitAndResolveAllModuleIds(codegenContext);
 
           const allContents: ContentSpec[] = [];
-          const allModuleIds = getAllModuleIds().filter((resolvedId) =>
-            shouldIncludeImport(resolvedId, null)
-          );
           for (const id of allModuleIds) {
             allContents.push({
               raw: await getTailwindCSSContent(id),

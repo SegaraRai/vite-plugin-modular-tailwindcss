@@ -61,14 +61,15 @@ export async function hasCircularDependencies(
   return false;
 }
 
-export async function waitForModuleIdsToBeStable(
-  { getAllModuleIds, resolveModuleImports }: CodegenContext,
-  shouldInclude: (resolvedId: string) => boolean
-): Promise<void> {
+export async function waitAndResolveAllModuleIds({
+  getAllModuleIds,
+  resolveModuleImports,
+  shouldIncludeImport,
+}: CodegenContext): Promise<string[]> {
   for (;;) {
     const moduleIds = getAllModuleIds();
     for (const resolvedId of moduleIds) {
-      if (!shouldInclude(resolvedId)) {
+      if (!shouldIncludeImport(resolvedId, null)) {
         continue;
       }
 
@@ -77,7 +78,9 @@ export async function waitForModuleIdsToBeStable(
 
     const afterCount = getAllModuleIds().length;
     if (moduleIds.length === afterCount) {
-      break;
+      return moduleIds.filter((resolvedId) =>
+        shouldIncludeImport(resolvedId, null)
+      );
     }
   }
 }
