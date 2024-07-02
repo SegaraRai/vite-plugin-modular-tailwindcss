@@ -50,6 +50,7 @@ export async function generateCode(
 ): Promise<[code: string, hasSideEffects: boolean]> {
   const { mode } = parsedId;
   const { layers, globCWD } = codegenContext.options;
+  const warn = ctx.warn.bind(ctx);
 
   switch (mode) {
     case "top": {
@@ -82,7 +83,8 @@ export async function generateCode(
         layer.mode,
         layer.code,
         content,
-        globCWD
+        globCWD,
+        warn
       );
       return [selfCode, false];
     }
@@ -108,7 +110,8 @@ export async function generateCode(
         layer.mode,
         layer.code,
         referencedContents,
-        globCWD
+        globCWD,
+        warn
       );
       return [allCode, false];
     }
@@ -140,7 +143,8 @@ export async function generateCode(
             layer.mode,
             layer.code,
             allContents,
-            globCWD
+            globCWD,
+            warn
           );
           return [globalCode, false];
         }
@@ -151,7 +155,8 @@ export async function generateCode(
             layer.mode,
             layer.code,
             content,
-            globCWD
+            globCWD,
+            warn
           );
           return [globalCode, false];
         }

@@ -10,8 +10,8 @@ import pkgTailwind from "tailwindcss/lib/processTailwindFeatures.js";
 import loadConfig from "tailwindcss/loadConfig.js";
 import resolveConfig from "tailwindcss/resolveConfig.js";
 import type { ContentSpec, LayerMode } from "../options";
-import type { PluginContext } from "../utils";
 import { createFilesystemCache, resolveContentSpec } from "./fsResolver";
+import type { WarnCallback } from "./types";
 
 const { loadPostcss } = pkgDeps;
 const tailwind =
@@ -21,12 +21,10 @@ interface Context {
   readonly layerMode: LayerMode;
   readonly content: readonly ContentSpec[] | null;
   readonly globCWD: string | undefined;
+  readonly warn: WarnCallback;
 }
 
-export function createTailwindCSSGenerator(
-  ctx: PluginContext,
-  configPath: string
-) {
+export function createTailwindCSSGenerator(configPath: string) {
   const config = loadConfig(configPath);
   const resolvedConfig = resolveConfig(config);
 
@@ -48,7 +46,7 @@ export function createTailwindCSSGenerator(
               throw new Error("LogicError: Context not set");
             }
 
-            const { layerMode, content, globCWD } = gCurrentContext;
+            const { layerMode, content, globCWD, warn } = gCurrentContext;
 
             const newConfig = {
               ...resolvedConfig,
@@ -60,14 +58,14 @@ export function createTailwindCSSGenerator(
 
             // Apparently we need to resolve the file system contents before creating the context.
             const resolvedContent = resolveContentSpec(
-              ctx,
               newConfig.content.files,
               fsCache,
-              globCWD
+              globCWD,
+              warn
             );
 
             if (layerMode === "global" && resolvedContent.length === 0) {
-              ctx.warn(
+              warn(
                 "No content found for global layer. Make sure to specify `content` either in the `tailwind.config.js` or in the layer options."
               );
             }
@@ -83,12 +81,14 @@ export function createTailwindCSSGenerator(
     mode: LayerMode,
     css: string,
     content: readonly ContentSpec[] | null,
-    globCWD: string | undefined
+    globCWD: string | undefined,
+    warn: WarnCallback
   ): Promise<string> {
     gCurrentContext = {
       layerMode: mode,
       content,
       globCWD,
+      warn,
     };
     const result = await processor.process(css, {
       from: undefined,

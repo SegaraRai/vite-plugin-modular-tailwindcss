@@ -2,7 +2,7 @@ import fg from "fast-glob";
 import fs from "node:fs";
 import { extname } from "node:path";
 import type { ContentSpec } from "../options";
-import type { PluginContext } from "../utils";
+import type { WarnCallback } from "./types";
 
 export interface ResolvedContent {
   content: string;
@@ -19,10 +19,10 @@ export function createFilesystemCache(): FilesystemCache {
 }
 
 export function resolveFilesystemContents(
-  ctx: PluginContext,
   globs: readonly string[],
   cache: FilesystemCache,
-  cwd: string | undefined
+  cwd: string | undefined,
+  warn: WarnCallback
 ): ResolvedContent[] {
   const result: ResolvedContent[] = [];
 
@@ -47,8 +47,8 @@ export function resolveFilesystemContents(
 
       result.push(entry[1]);
     } catch (e) {
-      ctx.warn(`Failed to read file: ${file}`);
-      ctx.warn(String(e));
+      warn(`Failed to read file: ${file}`);
+      warn(String(e));
     }
   }
 
@@ -56,10 +56,10 @@ export function resolveFilesystemContents(
 }
 
 export function resolveContentSpec(
-  ctx: PluginContext,
   content: readonly ContentSpec[],
   cache: FilesystemCache,
-  cwd: string | undefined
+  cwd: string | undefined,
+  warn: WarnCallback
 ): ResolvedContent[] {
   if (!content) {
     return [];
@@ -77,6 +77,6 @@ export function resolveContentSpec(
       content,
       extension,
     })),
-    ...resolveFilesystemContents(ctx, globs, cache, cwd),
+    ...resolveFilesystemContents(globs, cache, cwd, warn),
   ];
 }

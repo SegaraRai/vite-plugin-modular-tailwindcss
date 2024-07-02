@@ -7,13 +7,24 @@ import {
 import { isOurId, parseId, resolveId } from "../id";
 import { resolveOptions, type Options } from "../options";
 import { createTailwindCSSGenerator } from "../tailwind";
-import { getModuleCode, shouldExclude, type PluginContext } from "../utils";
+import { getModuleCode, shouldExclude } from "../utils";
 
 // for documentation links
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { modularTailwindCSSPluginServe } from "./serve";
 
-function createStore(ctx: PluginContext, options: Options) {
+/**
+ * Modular TailwindCSS plugin.
+ * Performs modularized TailwindCSS code generation.
+ *
+ * This plugin cannot be used in serve mode because it has limited support for `ModuleInfo`.
+ * We require `importedIds` and `code` to generate TailwindCSS code, but they are not available in serve mode.
+ * Use {@link modularTailwindCSSPluginServe} for serve mode.
+ */
+export function modularTailwindCSSPluginBuild(options: Options): Plugin {
+  const htmlMap = new Map<string, string>();
+  let seenCircularDependencyWarning = false;
+
   const resolvedOptions = resolveOptions(options);
 
   const codegenContext: CodegenContext = {
@@ -28,7 +39,6 @@ function createStore(ctx: PluginContext, options: Options) {
   };
 
   const generateTailwindCSS = createTailwindCSSGenerator(
-    ctx,
     resolvedOptions.configPath
   );
 
@@ -37,37 +47,11 @@ function createStore(ctx: PluginContext, options: Options) {
     resolvedOptions.layers.some(({ mode }) => mode === "module");
 
   return {
-    codegenContext,
-    generateTailwindCSS,
-    shouldWarnIfCircular,
-  };
-}
-
-/**
- * Modular TailwindCSS plugin.
- * Performs modularized TailwindCSS code generation.
- *
- * This plugin cannot be used in serve mode because it has limited support for `ModuleInfo`.
- * We require `importedIds` and `code` to generate TailwindCSS code, but they are not available in serve mode.
- * Use {@link modularTailwindCSSPluginServe} for serve mode.
- */
-export function modularTailwindCSSPluginBuild(options: Options): Plugin {
-  const ctxWeakMap = new WeakMap<
-    PluginContext,
-    ReturnType<typeof createStore>
-  >();
-
-  const htmlMap = new Map<string, string>();
-
-  let seenCircularDependencyWarning = false;
-
-  return {
     name: "vite-plugin-modular-tailwindcss-build",
     apply: "build",
     enforce: "pre",
     buildStart(): void {
       htmlMap.clear();
-      ctxWeakMap.set(this, createStore(this, options));
     },
     transformIndexHtml: {
       order: "pre",
@@ -88,16 +72,6 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
         if (!parsedId) {
           return;
         }
-
-        let store = ctxWeakMap.get(this);
-        if (!store) {
-          this.warn("Store not found for current context. Recreating...");
-          store = createStore(this, options);
-          ctxWeakMap.set(this, store);
-        }
-
-        const { codegenContext, generateTailwindCSS, shouldWarnIfCircular } =
-          store;
 
         if (
           !seenCircularDependencyWarning &&
