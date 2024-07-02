@@ -5,7 +5,7 @@ import {
   type TailwindModuleIdTop,
 } from "../id";
 import type { Layer } from "../options";
-import { assertsNever, type PluginContext } from "../utils";
+import { assertsNever } from "../utils";
 import type { CodegenContext } from "./context";
 import { getFilteredModuleImports } from "./utils";
 
@@ -110,15 +110,13 @@ export async function generateTopJSCode(
 }
 
 export async function generateModuleJSCode(
-  ctx: PluginContext,
-  { source, layerIndex, inject, shallow }: TailwindModuleIdModuleJS,
-  { shouldIncludeImport, options: { allowCircularModules } }: CodegenContext
+  context: CodegenContext,
+  { source, layerIndex, inject, shallow }: TailwindModuleIdModuleJS
 ): Promise<string> {
-  const importedIds = await getFilteredModuleImports(
-    ctx,
-    source,
-    shouldIncludeImport
-  );
+  const {
+    options: { allowCircularModules },
+  } = context;
+  const importedIds = await getFilteredModuleImports(context, source);
 
   const { addImport, getImportCode, getExportCode } =
     createImportCodegen(inject);

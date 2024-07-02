@@ -7,11 +7,46 @@ import {
 import { isOurId, parseId, resolveId } from "../id";
 import { resolveOptions, type Options } from "../options";
 import { createTailwindCSSGenerator } from "../tailwind";
-import { getModuleCode, shouldExclude } from "../utils";
+import {
+  getModuleCode,
+  getModuleImports,
+  shouldExclude,
+  type PluginContext,
+} from "../utils";
 
 // for documentation links
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { modularTailwindCSSPluginServe } from "./serve";
+
+type CodegenContextBase = Pick<
+  CodegenContext,
+  "options" | "shouldIncludeImport"
+>;
+
+function createCodegenContext(
+  baseContext: CodegenContextBase,
+  pluginContext: PluginContext
+): CodegenContext {
+  return {
+    ...baseContext,
+    getAllModuleIds: (): readonly string[] => {
+      return Array.from(pluginContext.getModuleIds());
+    },
+    resolveModuleImports: async (
+      resolvedId: string,
+      importerId: string | null
+    ): Promise<readonly string[]> => {
+      return getModuleImports(
+        pluginContext,
+        resolvedId,
+        importerId ?? undefined
+      );
+    },
+    warn: (message: string): void => {
+      pluginContext.warn(message);
+    },
+  };
+}
 
 /**
  * Modular TailwindCSS plugin.
@@ -27,7 +62,7 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
 
   const resolvedOptions = resolveOptions(options);
 
-  const codegenContext: CodegenContext = {
+  const codegenContextBase: CodegenContextBase = {
     options: resolvedOptions,
     shouldIncludeImport: (
       resolvedId: string,
@@ -73,18 +108,14 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
           return;
         }
 
+        const codegenContext = createCodegenContext(codegenContextBase, this);
+
         if (
           !seenCircularDependencyWarning &&
           shouldWarnIfCircular &&
           parsedId.mode === "top"
         ) {
-          if (
-            await hasCircularDependencies(
-              this,
-              parsedId.source,
-              codegenContext.shouldIncludeImport
-            )
-          ) {
+          if (await hasCircularDependencies(codegenContext, parsedId.source)) {
             seenCircularDependencyWarning = true;
 
             this.warn({
@@ -96,7 +127,6 @@ See https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-f
         }
 
         const [code, moduleSideEffects] = await generateCode(
-          this,
           parsedId,
           codegenContext,
           generateTailwindCSS,

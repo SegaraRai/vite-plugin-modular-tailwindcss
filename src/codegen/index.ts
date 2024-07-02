@@ -1,14 +1,13 @@
 import type { TailwindModuleId } from "../id";
 import type { ContentSpec, Layer, LayerMode } from "../options";
 import type { createTailwindCSSGenerator } from "../tailwind";
-import {
-  assertsNever,
-  waitForModuleIdsToBeStable,
-  type PluginContext,
-} from "../utils";
+import { assertsNever } from "../utils";
 import type { CodegenContext } from "./context";
 import { generateModuleJSCode, generateTopJSCode } from "./js";
-import { getFilteredModuleImportsRecursive } from "./utils";
+import {
+  getFilteredModuleImportsRecursive,
+  waitForModuleIdsToBeStable,
+} from "./utils";
 
 export * from "./context";
 export { hasCircularDependencies } from "./utils";
@@ -41,7 +40,6 @@ function getLayer<T extends LayerMode>(
 }
 
 export async function generateCode(
-  ctx: PluginContext,
   parsedId: TailwindModuleId,
   codegenContext: CodegenContext,
   generateTailwindCSS: ReturnType<typeof createTailwindCSSGenerator>,
@@ -49,8 +47,12 @@ export async function generateCode(
   getTailwindCSSContent: (sourceId: string) => Promise<string>
 ): Promise<[code: string, hasSideEffects: boolean]> {
   const { mode } = parsedId;
-  const { layers, globCWD } = codegenContext.options;
-  const warn = ctx.warn.bind(ctx);
+  const {
+    getAllModuleIds,
+    shouldIncludeImport,
+    warn,
+    options: { layers, globCWD },
+  } = codegenContext;
 
   switch (mode) {
     case "top": {
@@ -64,11 +66,7 @@ export async function generateCode(
 
     case "module": {
       if (parsedId.ext === "js") {
-        const selfJSCode = await generateModuleJSCode(
-          ctx,
-          parsedId,
-          codegenContext
-        );
+        const selfJSCode = await generateModuleJSCode(codegenContext, parsedId);
         return [selfJSCode, parsedId.inject];
       }
 
@@ -96,9 +94,8 @@ export async function generateCode(
       const referencedIds = parsedId.shallow
         ? [parsedId.source]
         : await getFilteredModuleImportsRecursive(
-            ctx,
-            parsedId.source,
-            codegenContext.shouldIncludeImport
+            codegenContext,
+            parsedId.source
           );
       for (const id of referencedIds) {
         referencedContents.push({
@@ -124,13 +121,15 @@ export async function generateCode(
 
       switch (layer.mode) {
         case "global": {
-          await waitForModuleIdsToBeStable(ctx, (resolvedId: string): boolean =>
-            codegenContext.shouldIncludeImport(resolvedId, null)
+          await waitForModuleIdsToBeStable(
+            codegenContext,
+            (resolvedId: string): boolean =>
+              shouldIncludeImport(resolvedId, null)
           );
 
           const allContents: ContentSpec[] = [];
-          const allModuleIds = Array.from(ctx.getModuleIds()).filter(
-            (resolvedId) => codegenContext.shouldIncludeImport(resolvedId, null)
+          const allModuleIds = getAllModuleIds().filter((resolvedId) =>
+            shouldIncludeImport(resolvedId, null)
           );
           for (const id of allModuleIds) {
             allContents.push({
