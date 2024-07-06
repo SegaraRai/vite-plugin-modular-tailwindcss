@@ -1,3 +1,4 @@
 export * from "./auto";
 export * from "./build";
-export * from "./serve";
+export * from "./serveLite";
+export * from "./serveStrict";

@@ -20,7 +20,7 @@ const DEV_GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
  * This plugin utilizes the native PostCSS / TailwindCSS support in Vite.
  * To make this plugin work, you need to configure the `postcss.config.js` and `tailwind.config.js` files.
  */
-export function modularTailwindCSSPluginServe(options: Options): Plugin {
+export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
   const resolvedOptions = resolveOptions(options);
   const globalCSSCode = resolvedOptions.layers
     .filter((layer) => layer.apply !== "build")
@@ -54,7 +54,7 @@ export function modularTailwindCSSPluginServe(options: Options): Plugin {
           }
 
           res.statusCode = 302;
-          res.setHeader("Location", getURLPathFromModuleId(resolvedId));
+          res.setHeader("Location", getURLPathFromModuleId(resolvedId, null));
           res.end();
         })().catch((err): void => {
           console.error(err);

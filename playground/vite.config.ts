@@ -7,6 +7,8 @@ const usePrebuilt =
   env.MTW_PLUGIN !== "development" &&
   (!!env.CI || env.NODE_ENV === "test" || env.MTW_PLUGIN === "prebuilt");
 
+const servePlugin = env.MTW_SERVE_PLUGIN === "strict" ? "strict" : "lite";
+
 const modularTailwindCSSPlugin = usePrebuilt
   ? modularTailwindCSSPluginPrebuilt
   : modularTailwindCSSPluginDev;
@@ -16,11 +18,14 @@ console.info(
 );
 
 export default defineConfig({
+  server: {
+    preTransformRequests: false,
+  },
   build: {
     minify: false,
     rollupOptions: {
       preserveEntrySignatures: "strict",
-      input: ["index.html", "secondary.html"],
+      input: ["index.html", "secondary.html", "virtual.html"],
       output: {
         assetFileNames: "[name][extname]",
         entryFileNames: "[name].js",
@@ -30,6 +35,7 @@ export default defineConfig({
   },
   plugins: [
     modularTailwindCSSPlugin({
+      servePlugin,
       layers: [
         {
           mode: "global",
@@ -55,5 +61,23 @@ export default defineConfig({
       ],
       excludes: [/\bnode_modules\b/],
     }),
+    {
+      name: "virtual-module-loader",
+      resolveId(id) {
+        if (id === "#virtual" || id === "\0virtual") {
+          return "\0virtual";
+        }
+      },
+      load(id) {
+        if (id !== "\0virtual") {
+          return;
+        }
+
+        return `
+export { default as style } from "#tailwindcss";
+export const cls = "text-<DEL>red<DEL>-500 bg-$red$-200/20".replaceAll("$", "");
+`.replaceAll("<DEL>", "");
+      },
+    },
   ],
 });

@@ -67,7 +67,7 @@ export async function waitAndResolveAllModuleIds({
   shouldIncludeImport,
 }: CodegenContext): Promise<string[]> {
   for (;;) {
-    const moduleIds = getAllModuleIds();
+    const moduleIds = await getAllModuleIds();
     for (const resolvedId of moduleIds) {
       if (!shouldIncludeImport(resolvedId, null)) {
         continue;
@@ -76,7 +76,7 @@ export async function waitAndResolveAllModuleIds({
       await resolveModuleImports(resolvedId, null);
     }
 
-    const afterCount = getAllModuleIds().length;
+    const afterCount = (await getAllModuleIds()).length;
     if (moduleIds.length === afterCount) {
       return moduleIds.filter((resolvedId) =>
         shouldIncludeImport(resolvedId, null)

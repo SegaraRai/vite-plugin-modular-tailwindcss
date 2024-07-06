@@ -16,7 +16,7 @@ import {
 
 // for documentation links
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { modularTailwindCSSPluginServe } from "./serve";
+import type { modularTailwindCSSPluginServeStrict } from "./serveStrict";
 
 type CodegenContextBase = Pick<
   CodegenContext,
@@ -54,7 +54,7 @@ function createCodegenContext(
  *
  * This plugin cannot be used in serve mode because it has limited support for `ModuleInfo`.
  * We require `importedIds` and `code` to generate TailwindCSS code, but they are not available in serve mode.
- * Use {@link modularTailwindCSSPluginServe} for serve mode.
+ * Use {@link modularTailwindCSSPluginServeStrict} for serve mode.
  */
 export function modularTailwindCSSPluginBuild(options: Options): Plugin {
   const htmlMap = new Map<string, string>();

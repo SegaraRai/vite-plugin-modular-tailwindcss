@@ -5,6 +5,8 @@ const PORT = 5188;
 
 const CI = !!env.CI;
 const DEV = env.PLAYGROUND_ENV !== "preview";
+const DEV_COMMAND =
+  env.MTW_SERVE_PLUGIN === "strict" ? "dev:strict" : "dev:lite";
 
 console.info(
   `[playwright] Running in ${DEV ? "development" : "preview"} mode (${CI ? "CI" : "local"})`
@@ -43,7 +45,7 @@ export default defineConfig({
   ],
   webServer: {
     command: DEV
-      ? `pnpm dev ${VITE_SERVER_ARGS}`
+      ? `pnpm ${DEV_COMMAND} ${VITE_SERVER_ARGS}`
       : `pnpm build && pnpm preview ${VITE_SERVER_ARGS}`,
     env: {
       MTW_PLUGIN: DEV ? "development" : "prebuilt",

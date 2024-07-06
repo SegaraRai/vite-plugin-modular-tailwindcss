@@ -1,16 +1,19 @@
 import type { Plugin } from "vite";
-import type { Options } from "../options";
+import { resolveOptions, type Options } from "../options";
 import { modularTailwindCSSPluginBuild } from "./build";
-import { modularTailwindCSSPluginServe } from "./serve";
+import { modularTailwindCSSPluginServeLite } from "./serveLite";
+import { modularTailwindCSSPluginServeStrict } from "./serveStrict";
 
 /**
  * Modular TailwindCSS plugin, which includes both build and serve modes.
  *
- * This plugin is a combination of {@link modularTailwindCSSPluginBuild} and {@link modularTailwindCSSPluginServe}.
+ * This plugin is a combination of {@link modularTailwindCSSPluginBuild} and {@link modularTailwindCSSPluginServeLite} or {@link modularTailwindCSSPluginServeStrict}.
  */
 export function modularTailwindCSSPlugin(options: Options): Plugin[] {
   return [
     modularTailwindCSSPluginBuild(options),
-    modularTailwindCSSPluginServe(options),
+    resolveOptions(options).servePlugin === "lite"
+      ? modularTailwindCSSPluginServeLite(options)
+      : modularTailwindCSSPluginServeStrict(options),
   ];
 }

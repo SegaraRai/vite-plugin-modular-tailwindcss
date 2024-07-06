@@ -48,6 +48,17 @@ export type ExcludeSpec =
 
 export interface Options {
   /**
+   * Variation for `serve` mode plugin.
+   *
+   * - `lite`: A simpler version of the plugin that does not modularize the TailwindCSS code. \
+   *   Fast but does not support virtual modules.
+   * - `strict`: An experimental stricter version of the plugin that modularizes the TailwindCSS code. \
+   *   Slower but more compatible (but not fully compatible).
+   *
+   * @default "lite"
+   */
+  servePlugin?: "lite" | "strict";
+  /**
    * The path to the TailwindCSS configuration file. \
    * If not provided, the plugin will automatically locate the configuration file.
    */

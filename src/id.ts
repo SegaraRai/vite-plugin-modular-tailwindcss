@@ -108,7 +108,7 @@ export function resolveId(
 
 export async function resolveIdFromURL(
   url: string,
-  resolveIdFromPath: (path: string) => Promise<string>
+  resolveIdFromPath: (path: string) => string | Promise<string>
 ): Promise<string | undefined> {
   const match = TOP_IMPORT_SPEC_RE.exec(url);
   if (!match) {

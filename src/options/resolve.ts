@@ -25,6 +25,7 @@ const DEFAULT_LAYERS = [
 
 export function resolveOptions(options: Options): ResolvedOptions {
   return {
+    servePlugin: options.servePlugin ?? "lite",
     excludes: options.excludes ?? [...DEFAULT_EXCLUDES],
     layers: options.layers ?? JSON.parse(JSON.stringify(DEFAULT_LAYERS)),
     configPath: options.configPath ?? resolveDefaultTailwindConfigPath(),

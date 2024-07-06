@@ -6,10 +6,12 @@ export interface CodegenContext {
     resolvedId: string,
     importerId: string | null
   ) => boolean;
-  readonly getAllModuleIds: () => readonly string[];
+  readonly getAllModuleIds: () =>
+    | readonly string[]
+    | Promise<readonly string[]>;
   readonly resolveModuleImports: (
     resolvedId: string,
     importerId: string | null
-  ) => Promise<readonly string[]>;
+  ) => readonly string[] | Promise<readonly string[]>;
   readonly warn: (message: string) => void;
 }

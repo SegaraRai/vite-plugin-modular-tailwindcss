@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { env } from "node:process";
 
 test("index.html", async ({ page }) => {
   await page.goto("/");
@@ -37,5 +38,15 @@ test("secondary.html", async ({ page }) => {
   await expect(page).toHaveScreenshot();
 
   await searchButton.click();
+  await expect(page).toHaveScreenshot();
+});
+
+test("virtual.html", async ({ page }) => {
+  if (env.MTW_SERVE_PLUGIN === "lite") {
+    test.fail();
+  }
+
+  await page.goto("/virtual");
+
   await expect(page).toHaveScreenshot();
 });
