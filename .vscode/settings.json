@@ -5,5 +5,7 @@
     "tailwindcss",
     "typecheck"
   ],
-  "tailwindCSS.experimental.classRegex": ["\"((?:[^\"\\\\]|\\\\.)*?)\""]
+  "tailwindCSS.experimental.classRegex": [
+    "\"((?:[^\"\\\\]|\\\\.)*?)\""
+  ]
 }
