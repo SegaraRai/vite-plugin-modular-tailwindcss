@@ -1,11 +1,4 @@
 {
-  "cSpell.words": [
-    "codegen",
-    "subdir",
-    "tailwindcss",
-    "typecheck"
-  ],
-  "tailwindCSS.experimental.classRegex": [
-    "\"((?:[^\"\\\\]|\\\\.)*?)\""
-  ]
+  "cSpell.words": ["codegen", "subdir", "tailwindcss", "typecheck"],
+  "tailwindCSS.experimental.classRegex": ["\"((?:[^\"\\\\]|\\\\.)*?)\""]
 }
