@@ -1,4 +1,4 @@
-import { normalizePath, type Plugin } from "vite";
+import { normalizePath, type Plugin, type ResolvedConfig } from "vite";
 import {
   generateCode,
   hasCircularDependencies,
@@ -22,7 +22,8 @@ import type { modularTailwindCSSPluginServeStrict } from "./serveStrict";
 
 function createCodegenFunctions(
   resolvedOptions: ResolvedOptions,
-  pluginContext: PluginContext
+  pluginContext: PluginContext,
+  resolvedConfig: ResolvedConfig
 ): CodegenFunctions {
   return {
     shouldIncludeImport: (
@@ -36,10 +37,9 @@ function createCodegenFunctions(
       resolvedId: string,
       importerId: string | null
     ) => getModuleImports(pluginContext, resolvedId, importerId ?? undefined),
-    parseId: fwVite.parseId,
-    stringifyId: fwVite.stringifyId,
     toImportPath: fwVite.toImportPath,
     warn: pluginContext.warn.bind(pluginContext),
+    ...fwVite.createIdFunctions(resolvedConfig),
   };
 }
 
@@ -66,12 +66,19 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     resolvedOptions.layers.some(({ mode }) => mode === "module");
 
   const codegenContextWeakMap = new WeakMap<PluginContext, CodegenContext>();
-  const getCodegenContext = (pluginContext: PluginContext) => {
+  const getCodegenContext = (
+    pluginContext: PluginContext,
+    resolvedConfig: ResolvedConfig
+  ) => {
     let codegenContext = codegenContextWeakMap.get(pluginContext);
     if (!codegenContext) {
       codegenContext = {
         options: resolvedOptions,
-        functions: createCodegenFunctions(resolvedOptions, pluginContext),
+        functions: createCodegenFunctions(
+          resolvedOptions,
+          pluginContext,
+          resolvedConfig
+        ),
       };
       codegenContextWeakMap.set(pluginContext, codegenContext);
     }
@@ -79,10 +86,15 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     return codegenContext;
   };
 
+  let resolvedConfig: ResolvedConfig | undefined;
+
   return {
     name: "vite-plugin-modular-tailwindcss-build",
     apply: "build",
     enforce: "pre",
+    configResolved(config): void {
+      resolvedConfig = config;
+    },
     buildStart(): void {
       htmlMap.clear();
     },
@@ -95,14 +107,22 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        const { functions } = getCodegenContext(this);
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+
+        const { functions } = getCodegenContext(this, resolvedConfig);
         return resolveId(source, importer, functions);
       },
     },
     load: {
       order: "pre",
       async handler(resolvedId) {
-        const codegenContext = getCodegenContext(this);
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+
+        const codegenContext = getCodegenContext(this, resolvedConfig);
         const { functions } = codegenContext;
 
         const parsedId = parseId(resolvedId, functions);

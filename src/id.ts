@@ -183,7 +183,7 @@ export function parseId(
 
   if (!mode || !strLayerIndex || !extension) {
     throw new Error(
-      `LogicError: Could not extract mode, layer index, or extension from ${name}`
+      `LogicError: Could not extract mode, layer index, or extension from ${name}. Check "parseId", "stringifyId", and "toImportPath" are correct.`
     );
   }
 

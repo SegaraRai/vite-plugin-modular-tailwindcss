@@ -1,11 +1,6 @@
 import type { Plugin, ResolvedConfig } from "vite";
 import { fwVite } from "../frameworks";
-import {
-  parseId,
-  resolveId,
-  resolveIdFromURL,
-  type CodegenFunctionsForId,
-} from "../id";
+import { parseId, resolveId, resolveIdFromURL } from "../id";
 import { resolveOptions, type Options } from "../options";
 import {
   getIndexHTMLModuleId,
@@ -36,11 +31,6 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
   let seenFirstMessage = false;
   let resolvedConfig: ResolvedConfig | undefined;
 
-  const codegenFunctionsForId: CodegenFunctionsForId = {
-    parseId: fwVite.parseId,
-    stringifyId: fwVite.stringifyId,
-  };
-
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
     apply: "serve",
@@ -51,6 +41,11 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
       // Redirect to enable importing `?tailwindcss/inject` and `?tailwindcss/inject-shallow` from HTML.
       server.middlewares.use((req, res, next): void => {
         (async (): Promise<void> => {
+          if (!resolvedConfig) {
+            next();
+            return;
+          }
+
           const resolvedId = await resolveIdFromURL(
             req.url ?? "",
             async (path: string): Promise<string> =>
@@ -58,7 +53,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
               (await (resolvedConfig
                 ? getIndexHTMLModuleId(resolvedConfig)
                 : Promise.reject(new Error("No resolved config.")))),
-            codegenFunctionsForId
+            fwVite.createIdFunctions(resolvedConfig)
           );
           if (!resolvedId) {
             next();
@@ -90,7 +85,16 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
         if (source.startsWith(DEV_GLOBAL_TAILWIND_CSS_ID)) {
           return source;
         }
-        return resolveId(source, importer, codegenFunctionsForId);
+
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+
+        return resolveId(
+          source,
+          importer,
+          fwVite.createIdFunctions(resolvedConfig)
+        );
       },
     },
     load: {
@@ -103,7 +107,14 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
           };
         }
 
-        const parsedId = parseId(resolvedId, codegenFunctionsForId);
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+
+        const parsedId = parseId(
+          resolvedId,
+          fwVite.createIdFunctions(resolvedConfig)
+        );
         if (!parsedId) {
           return;
         }

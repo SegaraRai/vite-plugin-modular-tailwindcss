@@ -74,10 +74,10 @@ async function getCode(server: ViteDevServer, path: string): Promise<string> {
 }
 
 function createCodegenFunctions(
-  server: ViteDevServer,
   pluginContext: PluginContext,
+  server: ViteDevServer,
+  resolvedConfig: ResolvedConfig,
   resolvedOptions: ResolvedOptions,
-  root: string,
   htmlMap: ReadonlyMap<string, string>
 ): CodegenFunctions {
   async function getImportSpecifiers(
@@ -121,7 +121,7 @@ function createCodegenFunctions(
     resolveModuleImports: async (
       resolvedId: string
     ): Promise<readonly string[]> => {
-      const basePath = getURLPathFromModuleId(resolvedId, root);
+      const basePath = getURLPathFromModuleId(resolvedId, resolvedConfig.root);
       const importSpecifiers = await getImportSpecifiers(resolvedId, basePath);
 
       const imports: string[] = [];
@@ -155,12 +155,11 @@ function createCodegenFunctions(
 
       return imports;
     },
-    parseId: fwVite.parseId,
-    stringifyId: fwVite.stringifyId,
     toImportPath: fwVite.toImportPath,
     warn: (message: string): void => {
       pluginContext.warn(message);
     },
+    ...fwVite.createIdFunctions(resolvedConfig),
   };
 }
 
@@ -189,28 +188,21 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     !resolvedOptions.allowCircularModules &&
     resolvedOptions.layers.some(({ mode }) => mode === "module");
 
-  let resolvedConfig: ResolvedConfig | undefined;
-  let storedServer: ViteDevServer | undefined;
-
   const codegenContextWeakMap = new WeakMap<PluginContext, CodegenContext>();
-  const getCodegenContext = (pluginContext: PluginContext) => {
+  const getCodegenContext = (
+    pluginContext: PluginContext,
+    resolvedConfig: ResolvedConfig,
+    server: ViteDevServer
+  ) => {
     let codegenContext = codegenContextWeakMap.get(pluginContext);
     if (!codegenContext) {
-      if (!storedServer) {
-        throw new Error("LogicError: Server not set");
-      }
-
-      if (!resolvedConfig) {
-        throw new Error("LogicError: Resolved config not set");
-      }
-
       codegenContext = {
         options: resolvedOptions,
         functions: createCodegenFunctions(
-          storedServer,
           pluginContext,
+          server,
+          resolvedConfig,
           resolvedOptions,
-          resolvedConfig.root,
           htmlMap
         ),
       };
@@ -219,6 +211,9 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
 
     return codegenContext;
   };
+
+  let resolvedConfig: ResolvedConfig | undefined;
+  let storedServer: ViteDevServer | undefined;
 
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
@@ -233,14 +228,16 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
       // Redirect to enable importing `?tailwindcss/inject` and `?tailwindcss/inject-shallow` from HTML.
       server.middlewares.use((req, res, next): void => {
         (async (): Promise<void> => {
+          if (!resolvedConfig) {
+            next();
+            return;
+          }
+
           const resolvedId = await resolveIdFromURL(
             req.url ?? "",
             (path: string): string =>
               join(`${resolvedConfig!.root}/`, path.slice(1)),
-            {
-              parseId: fwVite.parseId,
-              stringifyId: fwVite.stringifyId,
-            }
+            fwVite.createIdFunctions(resolvedConfig)
           );
           if (!resolvedId) {
             next();
@@ -268,14 +265,36 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        const { functions } = getCodegenContext(this);
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+
+        if (!storedServer) {
+          throw new Error("LogicError: No server.");
+        }
+
+        const { functions } = getCodegenContext(
+          this,
+          resolvedConfig,
+          storedServer
+        );
         return resolveId(source, importer, functions);
       },
     },
     load: {
       order: "pre",
       async handler(resolvedId) {
-        const codegenContext = getCodegenContext(this);
+        if (!resolvedConfig) {
+          throw new Error("LogicError: No resolved config.");
+        }
+        const { root } = resolvedConfig;
+
+        const server = storedServer;
+        if (!server) {
+          throw new Error("LogicError: No server.");
+        }
+
+        const codegenContext = getCodegenContext(this, resolvedConfig, server);
         const { functions } = codegenContext;
 
         const parsedId = parseId(resolvedId, functions);
@@ -298,9 +317,6 @@ See https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-f
             });
           }
         }
-
-        const server = storedServer!;
-        const root = resolvedConfig!.root;
 
         const [code, moduleSideEffects] = await generateCode(
           parsedId,

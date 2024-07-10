@@ -10,6 +10,8 @@ import type { CodegenContext, CodegenFunctions } from "./context";
 import { getFilteredModuleImports } from "./utils";
 
 function createImportCodegen(inject: boolean, functions: CodegenFunctions) {
+  const { toImportPath } = functions;
+
   const importCodes: string[] = [];
   const vars: [name: string, isFunction: boolean][] = [];
 
@@ -19,7 +21,7 @@ function createImportCodegen(inject: boolean, functions: CodegenFunctions) {
     isFunction: boolean
   ): Promise<void> => {
     const target = JSON.stringify(
-      functions.toImportPath(stringifyId(id, inject, functions), {
+      toImportPath(stringifyId(id, inject, functions), {
         extension: id.extension,
         mode: inject ? "inject" : "inline",
       })
