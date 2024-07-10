@@ -1,6 +1,6 @@
 import type { TailwindModuleId } from "../id";
 import type { ContentSpec, Layer, LayerMode } from "../options";
-import type { createTailwindCSSGenerator } from "../tailwind";
+import type { createTailwindCSSGenerator } from "../tailwindcss";
 import { assertsNever } from "../utils";
 import type { CodegenContext } from "./context";
 import { generateModuleJSCode, generateTopJSCode } from "./js";
@@ -48,9 +48,10 @@ export async function generateCode(
 ): Promise<[code: string, hasSideEffects: boolean]> {
   const { mode } = parsedId;
   const {
-    warn,
+    functions,
     options: { layers, globCWD },
   } = codegenContext;
+  const { warn } = functions;
 
   switch (mode) {
     case "top": {
@@ -63,7 +64,7 @@ export async function generateCode(
     }
 
     case "module": {
-      if (parsedId.ext === "js") {
+      if (parsedId.extension === "js") {
         const selfJSCode = await generateModuleJSCode(codegenContext, parsedId);
         return [selfJSCode, parsedId.inject];
       }
@@ -91,10 +92,7 @@ export async function generateCode(
       const referencedContents: ContentSpec[] = [];
       const referencedIds = parsedId.shallow
         ? [parsedId.source]
-        : await getFilteredModuleImportsRecursive(
-            codegenContext,
-            parsedId.source
-          );
+        : await getFilteredModuleImportsRecursive(functions, parsedId.source);
       for (const id of referencedIds) {
         referencedContents.push({
           raw: await getTailwindCSSContent(id),
@@ -119,7 +117,7 @@ export async function generateCode(
 
       switch (layer.mode) {
         case "global": {
-          const allModuleIds = await waitAndResolveAllModuleIds(codegenContext);
+          const allModuleIds = await waitAndResolveAllModuleIds(functions);
 
           const allContents: ContentSpec[] = [];
           for (const id of allModuleIds) {

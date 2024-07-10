@@ -3,10 +3,12 @@ import {
   generateCode,
   hasCircularDependencies,
   type CodegenContext,
+  type CodegenFunctions,
 } from "../codegen";
-import { isOurId, parseId, resolveId } from "../id";
-import { resolveOptions, type Options } from "../options";
-import { createTailwindCSSGenerator } from "../tailwind";
+import { fwVite } from "../frameworks";
+import { parseId, resolveId } from "../id";
+import { resolveOptions, type Options, type ResolvedOptions } from "../options";
+import { createTailwindCSSGenerator } from "../tailwindcss";
 import {
   getModuleCode,
   getModuleImports,
@@ -18,33 +20,26 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { modularTailwindCSSPluginServeStrict } from "./serveStrict";
 
-type CodegenContextBase = Pick<
-  CodegenContext,
-  "options" | "shouldIncludeImport"
->;
-
-function createCodegenContext(
-  baseContext: CodegenContextBase,
+function createCodegenFunctions(
+  resolvedOptions: ResolvedOptions,
   pluginContext: PluginContext
-): CodegenContext {
+): CodegenFunctions {
   return {
-    ...baseContext,
-    getAllModuleIds: (): readonly string[] => {
-      return Array.from(pluginContext.getModuleIds());
-    },
+    shouldIncludeImport: (
+      resolvedId: string,
+      importerId: string | null
+    ): boolean =>
+      !resolvedId.startsWith("\0vite/") &&
+      !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),
+    getAllModuleIds: () => Array.from(pluginContext.getModuleIds()),
     resolveModuleImports: async (
       resolvedId: string,
       importerId: string | null
-    ): Promise<readonly string[]> => {
-      return getModuleImports(
-        pluginContext,
-        resolvedId,
-        importerId ?? undefined
-      );
-    },
-    warn: (message: string): void => {
-      pluginContext.warn(message);
-    },
+    ) => getModuleImports(pluginContext, resolvedId, importerId ?? undefined),
+    parseId: fwVite.parseId,
+    stringifyId: fwVite.stringifyId,
+    toImportPath: fwVite.toImportPath,
+    warn: pluginContext.warn.bind(pluginContext),
   };
 }
 
@@ -62,17 +57,6 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
 
   const resolvedOptions = resolveOptions(options);
 
-  const codegenContextBase: CodegenContextBase = {
-    options: resolvedOptions,
-    shouldIncludeImport: (
-      resolvedId: string,
-      importerId: string | null
-    ): boolean =>
-      !resolvedId.startsWith("\0vite/") &&
-      !isOurId(resolvedId) &&
-      !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),
-  };
-
   const generateTailwindCSS = createTailwindCSSGenerator(
     resolvedOptions.configPath
   );
@@ -80,6 +64,20 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
   const shouldWarnIfCircular =
     !resolvedOptions.allowCircularModules &&
     resolvedOptions.layers.some(({ mode }) => mode === "module");
+
+  const codegenContextWeakMap = new WeakMap<PluginContext, CodegenContext>();
+  const getCodegenContext = (pluginContext: PluginContext) => {
+    let codegenContext = codegenContextWeakMap.get(pluginContext);
+    if (!codegenContext) {
+      codegenContext = {
+        options: resolvedOptions,
+        functions: createCodegenFunctions(resolvedOptions, pluginContext),
+      };
+      codegenContextWeakMap.set(pluginContext, codegenContext);
+    }
+
+    return codegenContext;
+  };
 
   return {
     name: "vite-plugin-modular-tailwindcss-build",
@@ -97,25 +95,27 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        return resolveId(source, importer);
+        const { functions } = getCodegenContext(this);
+        return resolveId(source, importer, functions);
       },
     },
     load: {
       order: "pre",
       async handler(resolvedId) {
-        const parsedId = parseId(resolvedId);
+        const codegenContext = getCodegenContext(this);
+        const { functions } = codegenContext;
+
+        const parsedId = parseId(resolvedId, functions);
         if (!parsedId) {
           return;
         }
-
-        const codegenContext = createCodegenContext(codegenContextBase, this);
 
         if (
           !seenCircularDependencyWarning &&
           shouldWarnIfCircular &&
           parsedId.mode === "top"
         ) {
-          if (await hasCircularDependencies(codegenContext, parsedId.source)) {
+          if (await hasCircularDependencies(functions, parsedId.source)) {
             seenCircularDependencyWarning = true;
 
             this.warn({

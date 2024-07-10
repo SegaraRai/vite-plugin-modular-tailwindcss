@@ -1,9 +1,14 @@
+import type { CodegenFunctions, IdInfo } from "./codegen";
 import { assertsNever } from "./utils";
+
+export type CodegenFunctionsForId = Pick<
+  CodegenFunctions,
+  "parseId" | "stringifyId"
+>;
 
 export interface TailwindModuleIdTop {
   readonly mode: "top";
-  readonly ext: "js";
-  readonly layerIndex: null;
+  readonly extension: "js";
   readonly shallow: boolean;
   readonly inject: boolean;
   readonly source: string;
@@ -15,14 +20,13 @@ export interface TailwindModuleIdTop {
  */
 export interface TailwindModuleIdGlobal {
   readonly mode: "global";
-  readonly ext: "css";
+  readonly extension: "css";
   readonly layerIndex: number;
-  readonly source: null;
 }
 
 export interface TailwindModuleIdHoisted {
   readonly mode: "hoisted";
-  readonly ext: "css";
+  readonly extension: "css";
   readonly layerIndex: number;
   readonly shallow: boolean;
   readonly source: string;
@@ -30,7 +34,7 @@ export interface TailwindModuleIdHoisted {
 
 export interface TailwindModuleIdModuleJS {
   readonly mode: "module";
-  readonly ext: "js";
+  readonly extension: "js";
   readonly layerIndex: number;
   readonly shallow: boolean;
   readonly inject: boolean;
@@ -39,7 +43,7 @@ export interface TailwindModuleIdModuleJS {
 
 export interface TailwindModuleIdModuleCSS {
   readonly mode: "module";
-  readonly ext: "css";
+  readonly extension: "css";
   readonly layerIndex: number;
   readonly source: string;
 }
@@ -51,20 +55,14 @@ export type TailwindModuleId =
   | TailwindModuleIdModuleJS
   | TailwindModuleIdModuleCSS;
 
-const ID_GLOBAL_PREFIX = "\0tailwindcss.global.layer";
-const ID_COMMON_PREFIX = "\0tailwindcss:";
-const ID_SOURCE_DELIMITER = "::";
-
 const TOP_IMPORT_SPEC_RE = /[#?]tailwindcss(?:\/([^/]*))?$/;
 
 export function resolveId(
   source: string,
-  importer: string | undefined
+  importer: string | undefined,
+  funcs: CodegenFunctionsForId
 ): string | undefined {
-  if (
-    source.startsWith(ID_GLOBAL_PREFIX) ||
-    source.startsWith(ID_COMMON_PREFIX)
-  ) {
+  if (isOurId(source, funcs)) {
     return source;
   }
 
@@ -85,7 +83,7 @@ export function resolveId(
 
     path = importer;
   } else {
-    const resolved = resolveId(path, importer);
+    const resolved = resolveId(path, importer, funcs);
     if (!resolved) {
       throw new Error(`Could not resolve ${path} from ${importer}`);
     }
@@ -96,55 +94,64 @@ export function resolveId(
   return stringifyId(
     {
       mode: "top",
-      ext: "js",
-      layerIndex: null,
+      extension: "js",
       shallow,
       inject,
       source: path,
     },
-    inject
+    inject,
+    funcs
   );
 }
 
 export async function resolveIdFromURL(
   url: string,
-  resolveIdFromPath: (path: string) => string | Promise<string>
+  resolveIdFromPath: (path: string) => string | Promise<string>,
+  funcs: CodegenFunctionsForId
 ): Promise<string | undefined> {
   const match = TOP_IMPORT_SPEC_RE.exec(url);
   if (!match) {
     return;
   }
 
-  const specs = (match?.[1] ?? "").split(/\b/);
-  const shallow = specs.includes("shallow");
-  const inject = specs.includes("inject");
+  const specifier = (match?.[1] ?? "").split(/\b/);
+  const shallow = specifier.includes("shallow");
+  const inject = specifier.includes("inject");
 
   const source = await resolveIdFromPath(url.slice(0, -match[0].length));
 
   return stringifyId(
     {
       mode: "top",
-      ext: "js",
-      layerIndex: null,
+      extension: "js",
       shallow,
       inject,
       source,
     },
-    inject
+    inject,
+    funcs
   );
 }
 
-export function isOurId(resolvedId: string): boolean {
-  return (
-    resolvedId.startsWith(ID_GLOBAL_PREFIX) ||
-    resolvedId.startsWith(ID_COMMON_PREFIX)
-  );
+export function isOurId(
+  resolvedId: string,
+  { parseId }: CodegenFunctionsForId
+): boolean {
+  return !!parseId(resolvedId);
 }
 
-export function parseId(resolvedId: string): TailwindModuleId | undefined {
-  if (resolvedId.startsWith(ID_GLOBAL_PREFIX)) {
-    const layerIndex = /\.layer(\d+)\./.exec(resolvedId)?.[1];
-    if (!layerIndex) {
+export function parseId(
+  resolvedId: string,
+  { parseId }: CodegenFunctionsForId
+): TailwindModuleId | undefined {
+  const [source, name] = parseId(resolvedId) ?? [];
+  if (!name) {
+    return;
+  }
+
+  if (!source) {
+    const strLayerIndex = /\.layer(\d+)\./.exec(name)?.[1];
+    if (!strLayerIndex) {
       throw new Error(
         `LogicError: Could not extract layer index from ${resolvedId}`
       );
@@ -152,59 +159,46 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
 
     return {
       mode: "global",
-      ext: "css",
-      layerIndex: Number(layerIndex),
-      source: null,
+      extension: "css",
+      layerIndex: Number(strLayerIndex),
     };
   }
 
-  if (!resolvedId.startsWith(ID_COMMON_PREFIX)) {
-    return;
-  }
-
-  const [source, spec] = resolvedId
-    .slice(ID_COMMON_PREFIX.length)
-    .split(ID_SOURCE_DELIMITER);
-  if (!source) {
-    throw new Error(`LogicError: Could not extract source from ${resolvedId}`);
-  }
-
-  if (spec.startsWith("index.")) {
-    const inject = spec.includes(".inject.");
-    const shallow = spec.includes(".shallow.");
+  const [, topSpecifier] = /^top\.([a-z]+)\.js/.exec(name) ?? [];
+  if (topSpecifier) {
+    const shallow = topSpecifier.includes("s");
+    const inject = topSpecifier.includes("j");
 
     return {
       mode: "top",
-      ext: "js",
-      layerIndex: null,
+      extension: "js",
       shallow,
       inject,
       source,
     };
   }
 
-  const [, mode, layerIndex, strShallow, compoundExtension] =
-    /^(hoisted|module)\.layer(\d+)(\.shallow)?\.(css|(?:inject\.)?js|raw)/.exec(
-      spec
-    ) ?? [];
+  const [, mode, strLayerIndex, specifier, extension] =
+    /^(hoisted|module)\.layer(\d+)\.([a-z]+)\.(js|css)/.exec(name) ?? [];
 
-  if (!mode || !layerIndex || !compoundExtension) {
+  if (!mode || !strLayerIndex || !extension) {
     throw new Error(
-      `LogicError: Could not extract mode, layer index, or extension from ${spec}`
+      `LogicError: Could not extract mode, layer index, or extension from ${name}`
     );
   }
 
-  const extension = compoundExtension.split(".").pop()!;
-  const shallow = !!strShallow;
-  const inject = compoundExtension.startsWith("inject.");
+  const layerIndex = Number(strLayerIndex);
+
+  const shallow = specifier.includes("s");
+  const inject = specifier.includes("j");
 
   switch (mode) {
     case "hoisted":
       if (extension === "css") {
         return {
-          mode: "hoisted",
-          ext: extension,
-          layerIndex: Number(layerIndex),
+          mode,
+          extension,
+          layerIndex,
           shallow,
           source,
         };
@@ -215,9 +209,9 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
     case "module":
       if (extension === "js") {
         return {
-          mode: "module",
-          ext: extension,
-          layerIndex: Number(layerIndex),
+          mode,
+          extension,
+          layerIndex,
           shallow,
           inject,
           source,
@@ -230,9 +224,9 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
         }
 
         return {
-          mode: "module",
-          ext: extension,
-          layerIndex: Number(layerIndex),
+          mode,
+          extension,
+          layerIndex,
           source,
         };
       }
@@ -244,34 +238,58 @@ export function parseId(resolvedId: string): TailwindModuleId | undefined {
   }
 }
 
-export function stringifyId(id: TailwindModuleId, inject: boolean): string {
-  if (id.mode === "global") {
-    return `${ID_GLOBAL_PREFIX}${id.layerIndex}.css${!inject ? "?inline" : ""}`;
-  }
+export function stringifyId(
+  id: TailwindModuleId,
+  inject: boolean,
+  { stringifyId }: CodegenFunctionsForId
+): string {
+  const injectSpec = inject ? "j" : "l";
+  const shallowSpec = "shallow" in id ? (id.shallow ? "s" : "d") : "";
+  const spec = `${shallowSpec}${injectSpec}`;
 
-  const prefix = `${ID_COMMON_PREFIX}${id.source}${ID_SOURCE_DELIMITER}`;
+  if (id.mode === "global") {
+    return stringifyId(null, `global.layer${id.layerIndex}.${spec}.css`);
+  }
 
   switch (id.mode) {
     case "top":
       if (inject !== id.inject) {
         throw new Error("LogicError: inject specifier mismatch for top code");
       }
-      return `${prefix}index${id.shallow ? ".shallow" : ""}${!inject ? ".inline" : ".inject"}.js`;
+      return stringifyId(id.source, `top.${spec}.js`);
 
     case "hoisted":
-      return `${prefix}hoisted.layer${id.layerIndex}${id.shallow ? ".shallow" : ""}.css${!inject ? "?inline" : ""}`;
+      return stringifyId(
+        id.source,
+        `hoisted.layer${id.layerIndex}.${spec}.css`
+      );
 
     case "module":
-      if (id.ext === "js" && inject !== id.inject) {
+      if (id.extension === "js" && inject !== id.inject) {
         throw new Error(
           `LogicError: inject specifier mismatch for module layer ${id.layerIndex}`
         );
       }
-      return id.ext === "js"
-        ? `${prefix}module.layer${id.layerIndex}${id.shallow ? ".shallow" : ""}${inject ? ".inject" : ""}.js`
-        : `${prefix}module.layer${id.layerIndex}.css${!inject ? "?inline" : ""}`;
+      return stringifyId(
+        id.source,
+        `module.layer${id.layerIndex}.${spec}.${id.extension}`
+      );
 
     default:
       assertsNever(id);
   }
+}
+
+export function getIdInfo(id: string): IdInfo {
+  const [, specifier, extension] = /\.([a-z]+)\.(js|css)$/.exec(id) ?? [];
+  if (!specifier || !extension) {
+    throw new Error(
+      `LogicError: Could not extract specifier or extension from ${id}`
+    );
+  }
+
+  return {
+    mode: specifier.includes("j") ? "inject" : "inline",
+    extension: extension as IdInfo["extension"],
+  };
 }

@@ -6,10 +6,10 @@ import {
 } from "../id";
 import type { Layer } from "../options";
 import { assertsNever } from "../utils";
-import type { CodegenContext } from "./context";
+import type { CodegenContext, CodegenFunctions } from "./context";
 import { getFilteredModuleImports } from "./utils";
 
-function createImportCodegen(inject: boolean) {
+function createImportCodegen(inject: boolean, functions: CodegenFunctions) {
   const importCodes: string[] = [];
   const vars: [name: string, isFunction: boolean][] = [];
 
@@ -18,7 +18,12 @@ function createImportCodegen(inject: boolean) {
     varName: string,
     isFunction: boolean
   ): Promise<void> => {
-    const target = JSON.stringify(stringifyId(id, inject));
+    const target = JSON.stringify(
+      functions.toImportPath(stringifyId(id, inject, functions), {
+        extension: id.extension,
+        mode: inject ? "inject" : "inline",
+      })
+    );
     if (inject) {
       importCodes.push(`import ${target};\n`);
     } else {
@@ -57,11 +62,13 @@ function createImportCodegen(inject: boolean) {
 
 export async function generateTopJSCode(
   { source, inject, shallow }: TailwindModuleIdTop,
-  { options: { allowCircularModules, layers } }: CodegenContext,
+  { functions, options: { allowCircularModules, layers } }: CodegenContext,
   skipLayer: (layer: Layer, layerIndex: number) => boolean
 ): Promise<string> {
-  const { addImport, getImportCode, getExportCode } =
-    createImportCodegen(inject);
+  const { addImport, getImportCode, getExportCode } = createImportCodegen(
+    inject,
+    functions
+  );
 
   for (const [layerIndex, layer] of layers.entries()) {
     if (skipLayer(layer, layerIndex)) {
@@ -72,7 +79,7 @@ export async function generateTopJSCode(
       case "global":
       case "globalFilesystem":
         await addImport(
-          { mode: "global", ext: "css", layerIndex, source: null },
+          { mode: "global", extension: "css", layerIndex },
           `l${layerIndex}g`,
           false
         );
@@ -80,7 +87,7 @@ export async function generateTopJSCode(
 
       case "hoisted":
         await addImport(
-          { mode: "hoisted", ext: "css", layerIndex, source, shallow },
+          { mode: "hoisted", extension: "css", layerIndex, source, shallow },
           `l${layerIndex}h`,
           false
         );
@@ -90,7 +97,7 @@ export async function generateTopJSCode(
         await addImport(
           {
             mode: "module",
-            ext: "js",
+            extension: "js",
             layerIndex,
             shallow,
             inject,
@@ -114,17 +121,27 @@ export async function generateModuleJSCode(
   { source, layerIndex, inject, shallow }: TailwindModuleIdModuleJS
 ): Promise<string> {
   const {
+    functions,
     options: { allowCircularModules },
   } = context;
-  const importedIds = await getFilteredModuleImports(context, source);
+  const importedIds = await getFilteredModuleImports(functions, source);
 
-  const { addImport, getImportCode, getExportCode } =
-    createImportCodegen(inject);
+  const { addImport, getImportCode, getExportCode } = createImportCodegen(
+    inject,
+    functions
+  );
 
   if (!shallow) {
     for (const [moduleIndex, id] of importedIds.entries()) {
       await addImport(
-        { mode: "module", ext: "js", layerIndex, source: id, inject, shallow },
+        {
+          mode: "module",
+          extension: "js",
+          layerIndex,
+          source: id,
+          inject,
+          shallow,
+        },
         `m${moduleIndex}`,
         allowCircularModules
       );
@@ -132,7 +149,7 @@ export async function generateModuleJSCode(
   }
 
   await addImport(
-    { mode: "module", ext: "css", layerIndex, source },
+    { mode: "module", extension: "css", layerIndex, source },
     "s",
     false
   );

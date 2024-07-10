@@ -1,5 +1,11 @@
 import type { Plugin, ResolvedConfig } from "vite";
-import { parseId, resolveId, resolveIdFromURL } from "../id";
+import { fwVite } from "../frameworks";
+import {
+  parseId,
+  resolveId,
+  resolveIdFromURL,
+  type CodegenFunctionsForId,
+} from "../id";
 import { resolveOptions, type Options } from "../options";
 import {
   getIndexHTMLModuleId,
@@ -30,6 +36,11 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
   let seenFirstMessage = false;
   let resolvedConfig: ResolvedConfig | undefined;
 
+  const codegenFunctionsForId: CodegenFunctionsForId = {
+    parseId: fwVite.parseId,
+    stringifyId: fwVite.stringifyId,
+  };
+
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
     apply: "serve",
@@ -46,7 +57,8 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
               (await getModuleIdFromURLPath(path, server.moduleGraph)) ??
               (await (resolvedConfig
                 ? getIndexHTMLModuleId(resolvedConfig)
-                : Promise.reject(new Error("No resolved config."))))
+                : Promise.reject(new Error("No resolved config.")))),
+            codegenFunctionsForId
           );
           if (!resolvedId) {
             next();
@@ -78,7 +90,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
         if (source.startsWith(DEV_GLOBAL_TAILWIND_CSS_ID)) {
           return source;
         }
-        return resolveId(source, importer);
+        return resolveId(source, importer, codegenFunctionsForId);
       },
     },
     load: {
@@ -91,7 +103,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
           };
         }
 
-        const parsedId = parseId(resolvedId);
+        const parsedId = parseId(resolvedId, codegenFunctionsForId);
         if (!parsedId) {
           return;
         }

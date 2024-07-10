@@ -1,13 +1,21 @@
-import type { CodegenContext } from "./context";
+import type { CodegenFunctions } from "./context";
 
 export type ImportFilter = (resolvedId: string, importerId: string) => boolean;
 
+function shouldIncludeImportAndNotOurs(
+  { shouldIncludeImport, parseId }: CodegenFunctions,
+  resolvedId: string,
+  importerId: string | null
+): boolean {
+  return !parseId(resolvedId) && shouldIncludeImport(resolvedId, importerId);
+}
+
 export async function getFilteredModuleImports(
-  { resolveModuleImports, shouldIncludeImport }: CodegenContext,
+  functions: CodegenFunctions,
   resolvedId: string
 ): Promise<readonly string[]> {
-  return (await resolveModuleImports(resolvedId, null)).filter((resolvedId) =>
-    shouldIncludeImport(resolvedId, resolvedId)
+  return (await functions.resolveModuleImports(resolvedId, null)).filter(
+    (resolvedId) => shouldIncludeImportAndNotOurs(functions, resolvedId, null)
   );
 }
 
@@ -17,7 +25,7 @@ export async function getFilteredModuleImports(
  * The source module will be included in the result.
  */
 export async function getFilteredModuleImportsRecursive(
-  context: CodegenContext,
+  functions: CodegenFunctions,
   resolvedId: string
 ): Promise<string[]> {
   const visited = new Set<string>();
@@ -34,7 +42,7 @@ export async function getFilteredModuleImportsRecursive(
     }
     visited.add(current);
 
-    const currentImports = await getFilteredModuleImports(context, current);
+    const currentImports = await getFilteredModuleImports(functions, current);
     queue.push(...currentImports);
   }
 
@@ -42,7 +50,7 @@ export async function getFilteredModuleImportsRecursive(
 }
 
 export async function hasCircularDependencies(
-  context: CodegenContext,
+  functions: CodegenFunctions,
   source: string,
   visited: string[] = []
 ): Promise<boolean> {
@@ -52,8 +60,8 @@ export async function hasCircularDependencies(
 
   const newVisited = [...visited, source];
 
-  for (const importId of await getFilteredModuleImports(context, source)) {
-    if (await hasCircularDependencies(context, importId, newVisited)) {
+  for (const importId of await getFilteredModuleImports(functions, source)) {
+    if (await hasCircularDependencies(functions, importId, newVisited)) {
       return true;
     }
   }
@@ -61,25 +69,25 @@ export async function hasCircularDependencies(
   return false;
 }
 
-export async function waitAndResolveAllModuleIds({
-  getAllModuleIds,
-  resolveModuleImports,
-  shouldIncludeImport,
-}: CodegenContext): Promise<string[]> {
+export async function waitAndResolveAllModuleIds(
+  functions: CodegenFunctions
+): Promise<string[]> {
+  const { getAllModuleIds } = functions;
+
   for (;;) {
     const moduleIds = await getAllModuleIds();
     for (const resolvedId of moduleIds) {
-      if (!shouldIncludeImport(resolvedId, null)) {
+      if (!shouldIncludeImportAndNotOurs(functions, resolvedId, null)) {
         continue;
       }
 
-      await resolveModuleImports(resolvedId, null);
+      await functions.resolveModuleImports(resolvedId, null);
     }
 
     const afterCount = (await getAllModuleIds()).length;
     if (moduleIds.length === afterCount) {
       return moduleIds.filter((resolvedId) =>
-        shouldIncludeImport(resolvedId, null)
+        shouldIncludeImportAndNotOurs(functions, resolvedId, null)
       );
     }
   }

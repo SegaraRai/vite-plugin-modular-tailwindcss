@@ -10,10 +10,12 @@ import {
   generateCode,
   hasCircularDependencies,
   type CodegenContext,
+  type CodegenFunctions,
 } from "../codegen";
-import { isOurId, parseId, resolveId, resolveIdFromURL } from "../id";
-import { resolveOptions, type Options } from "../options";
-import { createTailwindCSSGenerator } from "../tailwind";
+import { fwVite } from "../frameworks";
+import { parseId, resolveId, resolveIdFromURL } from "../id";
+import { resolveOptions, type Options, type ResolvedOptions } from "../options";
+import { createTailwindCSSGenerator } from "../tailwindcss";
 import {
   getModuleIdFromURLPath,
   getURLPathFromModuleId,
@@ -22,13 +24,10 @@ import {
   type PluginContext,
 } from "../utils";
 
-type CodegenContextBase = Pick<
-  CodegenContext,
-  "options" | "shouldIncludeImport"
->;
-
 function decodeHTMLAttributeURL(code: string): string {
-  return decodeURIComponent(code.replaceAll("&amp;", "&"));
+  return decodeURIComponent(
+    code.replaceAll("&quot;", '"').replaceAll("&amp;", "&")
+  );
 }
 
 function getHTML(
@@ -39,6 +38,7 @@ function getHTML(
   for (const htmlSourceId of [
     normalizedId,
     normalizedId + ".html",
+    normalizedId + "/index.html",
     normalizedId.replace(/\/$/, "/index.html"),
   ]) {
     const html = htmlMap.get(normalizePath(htmlSourceId));
@@ -73,13 +73,13 @@ async function getCode(server: ViteDevServer, path: string): Promise<string> {
   return result.code;
 }
 
-function createCodegenContext(
+function createCodegenFunctions(
   server: ViteDevServer,
-  baseContext: CodegenContextBase,
   pluginContext: PluginContext,
+  resolvedOptions: ResolvedOptions,
   root: string,
   htmlMap: ReadonlyMap<string, string>
-): CodegenContext {
+): CodegenFunctions {
   async function getImportSpecifiers(
     resolvedId: string,
     basePath: string
@@ -93,7 +93,7 @@ function createCodegenContext(
       const transformed = await server.transformIndexHtml(basePath, html);
       return Array.from(transformed.matchAll(/<script\s[^>]*>/g))
         .map((match) =>
-          match[0].match(/src=("[^"]+"|'[^']+')/)?.[1].slice(1, -1)
+          /src=("[^"]+"|'[^']+')/.exec(match[0])?.[1].slice(1, -1)
         )
         .filter((src): src is string => src != null)
         .map(decodeHTMLAttributeURL);
@@ -111,10 +111,13 @@ function createCodegenContext(
   }
 
   return {
-    ...baseContext,
-    getAllModuleIds: (): readonly string[] => {
-      return Array.from(server.moduleGraph.idToModuleMap.keys());
-    },
+    shouldIncludeImport: (
+      resolvedId: string,
+      importerId: string | null
+    ): boolean =>
+      !resolvedId.startsWith("\0vite/") &&
+      !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),
+    getAllModuleIds: () => Array.from(server.moduleGraph.idToModuleMap.keys()),
     resolveModuleImports: async (
       resolvedId: string
     ): Promise<readonly string[]> => {
@@ -152,6 +155,9 @@ function createCodegenContext(
 
       return imports;
     },
+    parseId: fwVite.parseId,
+    stringifyId: fwVite.stringifyId,
+    toImportPath: fwVite.toImportPath,
     warn: (message: string): void => {
       pluginContext.warn(message);
     },
@@ -175,17 +181,6 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
 
   const resolvedOptions = resolveOptions(options);
 
-  const codegenContextBase: CodegenContextBase = {
-    options: resolvedOptions,
-    shouldIncludeImport: (
-      resolvedId: string,
-      importerId: string | null
-    ): boolean =>
-      !resolvedId.startsWith("\0vite/") &&
-      !isOurId(resolvedId) &&
-      !shouldExclude(resolvedId, importerId, resolvedOptions.excludes),
-  };
-
   const generateTailwindCSS = createTailwindCSSGenerator(
     resolvedOptions.configPath
   );
@@ -196,6 +191,34 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
 
   let resolvedConfig: ResolvedConfig | undefined;
   let storedServer: ViteDevServer | undefined;
+
+  const codegenContextWeakMap = new WeakMap<PluginContext, CodegenContext>();
+  const getCodegenContext = (pluginContext: PluginContext) => {
+    let codegenContext = codegenContextWeakMap.get(pluginContext);
+    if (!codegenContext) {
+      if (!storedServer) {
+        throw new Error("LogicError: Server not set");
+      }
+
+      if (!resolvedConfig) {
+        throw new Error("LogicError: Resolved config not set");
+      }
+
+      codegenContext = {
+        options: resolvedOptions,
+        functions: createCodegenFunctions(
+          storedServer,
+          pluginContext,
+          resolvedOptions,
+          resolvedConfig.root,
+          htmlMap
+        ),
+      };
+      codegenContextWeakMap.set(pluginContext, codegenContext);
+    }
+
+    return codegenContext;
+  };
 
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
@@ -213,7 +236,11 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
           const resolvedId = await resolveIdFromURL(
             req.url ?? "",
             (path: string): string =>
-              join(`${resolvedConfig!.root}/`, path.slice(1))
+              join(`${resolvedConfig!.root}/`, path.slice(1)),
+            {
+              parseId: fwVite.parseId,
+              stringifyId: fwVite.stringifyId,
+            }
           );
           if (!resolvedId) {
             next();
@@ -241,41 +268,27 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        return resolveId(source, importer);
+        const { functions } = getCodegenContext(this);
+        return resolveId(source, importer, functions);
       },
     },
     load: {
       order: "pre",
       async handler(resolvedId) {
-        const parsedId = parseId(resolvedId);
+        const codegenContext = getCodegenContext(this);
+        const { functions } = codegenContext;
+
+        const parsedId = parseId(resolvedId, functions);
         if (!parsedId) {
           return;
         }
-
-        const server = storedServer;
-        if (!server) {
-          this.error("LogicError: Server not set");
-        }
-
-        if (!resolvedConfig) {
-          this.error("LogicError: Resolved config not set");
-        }
-        const { root } = resolvedConfig;
-
-        const codegenContext = createCodegenContext(
-          server,
-          codegenContextBase,
-          this,
-          root,
-          htmlMap
-        );
 
         if (
           !seenCircularDependencyWarning &&
           shouldWarnIfCircular &&
           parsedId.mode === "top"
         ) {
-          if (await hasCircularDependencies(codegenContext, parsedId.source)) {
+          if (await hasCircularDependencies(functions, parsedId.source)) {
             seenCircularDependencyWarning = true;
 
             this.warn({
@@ -285,6 +298,9 @@ See https://github.com/SegaraRai/vite-plugin-modular-tailwindcss?tab=readme-ov-f
             });
           }
         }
+
+        const server = storedServer!;
+        const root = resolvedConfig!.root;
 
         const [code, moduleSideEffects] = await generateCode(
           parsedId,

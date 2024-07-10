@@ -1,4 +1,4 @@
-import { resolveDefaultTailwindConfigPath } from "../tailwind";
+import { resolveDefaultTailwindConfigPath } from "../tailwindcss";
 import type { Options, ResolvedOptions } from "./types";
 
 const DEFAULT_EXCLUDES = [
