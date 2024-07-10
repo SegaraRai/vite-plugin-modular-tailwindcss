@@ -24,57 +24,57 @@ it("generates inline css with no used classes", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+    const X = "";
+    console.log(X, css);
+    ",
+      "[output] _virtual/global.layer0.l.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "";
-    console.log(X, css);
-    ",
-      "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = "";
+      "[output] _virtual/hoisted.layer1.dl.css.js": "const l1h = "";
     export {
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
-    import l1h from "./entry.js__hoisted.layer1.css.js";
-    import s from "./entry.js__module.layer2.css.js";
+      "[output] _virtual/module.layer2.dl.js": "import s from "./module.layer2.l.css.js";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/module.layer2.l.css.js": "const s = "";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import s from "./module.layer2.l.css.js";
     const css = l0g + l1h + s;
     export {
       css as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.css.js": "const s = "";
-    export {
-      s as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.js": "import s from "./entry.js__module.layer2.css.js";
-    export {
-      s as default
     };
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/global.layer0.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/hoisted.layer1.dl.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
@@ -108,57 +108,57 @@ it("generates inline css with an utility class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+    const X = "test-u-1";
+    console.log(X, css);
+    ",
+      "[output] _virtual/global.layer0.l.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "test-u-1";
-    console.log(X, css);
-    ",
-      "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = "";
+      "[output] _virtual/hoisted.layer1.dl.css.js": "const l1h = "";
     export {
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
-    import l1h from "./entry.js__hoisted.layer1.css.js";
-    import s from "./entry.js__module.layer2.css.js";
+      "[output] _virtual/module.layer2.dl.js": "import s from "./module.layer2.l.css.js";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/module.layer2.l.css.js": "const s = ".test-u-1 {\\n    --test-u: 1px\\n}\\n";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import s from "./module.layer2.l.css.js";
     const css = l0g + l1h + s;
     export {
       css as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.css.js": "const s = ".test-u-1 {\\n    --test-u: 1px\\n}\\n";
-    export {
-      s as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.js": "import s from "./entry.js__module.layer2.css.js";
-    export {
-      s as default
     };
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/global.layer0.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/hoisted.layer1.dl.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
@@ -192,57 +192,57 @@ it("generates inline css with an component class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+    const X = "test-c-1";
+    console.log(X, css);
+    ",
+      "[output] _virtual/global.layer0.l.css.js": "const l0g = "/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "test-c-1";
-    console.log(X, css);
-    ",
-      "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n";
+      "[output] _virtual/hoisted.layer1.dl.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n";
     export {
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
-    import l1h from "./entry.js__hoisted.layer1.css.js";
-    import s from "./entry.js__module.layer2.css.js";
+      "[output] _virtual/module.layer2.dl.js": "import s from "./module.layer2.l.css.js";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/module.layer2.l.css.js": "const s = "";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import s from "./module.layer2.l.css.js";
     const css = l0g + l1h + s;
     export {
       css as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.css.js": "const s = "";
-    export {
-      s as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.js": "import s from "./entry.js__module.layer2.css.js";
-    export {
-      s as default
     };
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/global.layer0.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/hoisted.layer1.dl.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
@@ -276,57 +276,57 @@ it("generates inline css with an base class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default """,
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+    const X = "test-b-1";
+    console.log(X, css);
+    ",
+      "[output] _virtual/global.layer0.l.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "test-b-1";
-    console.log(X, css);
-    ",
-      "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = "";
+      "[output] _virtual/hoisted.layer1.dl.css.js": "const l1h = "";
     export {
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
-    import l1h from "./entry.js__hoisted.layer1.css.js";
-    import s from "./entry.js__module.layer2.css.js";
+      "[output] _virtual/module.layer2.dl.js": "import s from "./module.layer2.l.css.js";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/module.layer2.l.css.js": "const s = "";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import s from "./module.layer2.l.css.js";
     const css = l0g + l1h + s;
     export {
       css as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.css.js": "const s = "";
-    export {
-      s as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.js": "import s from "./entry.js__module.layer2.css.js";
-    export {
-      s as default
     };
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/global.layer0.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/hoisted.layer1.dl.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
@@ -360,57 +360,57 @@ it("generates inline css with all layers", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
+      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+    const X = "test-u-1 test-c-1 test-b-1";
+    console.log(X, css);
+    ",
+      "[output] _virtual/global.layer0.l.css.js": "const l0g = ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n";
     export {
       l0g as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./entry.js__index.inline.js";
-    const X = "test-u-1 test-c-1 test-b-1";
-    console.log(X, css);
-    ",
-      "[output] _virtual/entry.js__hoisted.layer1.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n";
+      "[output] _virtual/hoisted.layer1.dl.css.js": "const l1h = ".test-c-1 {\\n    --test-c: 1px\\n}\\n";
     export {
       l1h as default
     };
     ",
-      "[output] _virtual/entry.js__index.inline.js": "import l0g from "./_tailwindcss.global.layer0.css.js";
-    import l1h from "./entry.js__hoisted.layer1.css.js";
-    import s from "./entry.js__module.layer2.css.js";
+      "[output] _virtual/module.layer2.dl.js": "import s from "./module.layer2.l.css.js";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/module.layer2.l.css.js": "const s = ".test-u-1 {\\n    --test-u: 1px\\n}\\n";
+    export {
+      s as default
+    };
+    ",
+      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import s from "./module.layer2.l.css.js";
     const css = l0g + l1h + s;
     export {
       css as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.css.js": "const s = ".test-u-1 {\\n    --test-u: 1px\\n}\\n";
-    export {
-      s as default
-    };
-    ",
-      "[output] _virtual/entry.js__module.layer2.js": "import s from "./entry.js__module.layer2.css.js";
-    export {
-      s as default
     };
     ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
-        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/_tailwindcss.global.layer0.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__hoisted.layer1.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__module.layer2.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/entry.js__index.inline.js"></script>
+        <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/global.layer0.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/hoisted.layer1.dl.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
+      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
     </head>
       <body>
@@ -441,17 +441,17 @@ it("works with side-effect only import", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
-      "[intermediate] tailwindcss:test/entry.js::hoisted.layer1.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::index.inline.js": "import l0g from "\\u0000tailwindcss.global.layer0.css?inline";
-    import l1h from "\\u0000tailwindcss:\\u0000test/entry.js::hoisted.layer1.css?inline";
-    import l2m from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.js";
-    export default l0g + l1h + l2m;
-    ",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
-      "[intermediate] tailwindcss:test/entry.js::module.layer2.js": "import s from "\\u0000tailwindcss:\\u0000test/entry.js::module.layer2.css?inline";
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default s;
     ",
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
+      "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[output] _virtual/entry.js": "
     ",
       "[output] tests/entry.html": "<!doctype html>

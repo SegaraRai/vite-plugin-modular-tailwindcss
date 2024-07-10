@@ -26,10 +26,12 @@ it("supports filesystem content", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss.global.layer0.css": "",
-      "[intermediate] tailwindcss:test/entry.js::index.inject.js": "import "\\u0000tailwindcss.global.layer0.css";
+      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
     ",
-      "[output] _virtual/_tailwindcss.global.layer0.css": ".test-b-2 {
+      "[intermediate] tailwindcss/global.layer0.j.css": "",
+      "[output] _virtual/entry.js": "/* empty css                    */
+    ",
+      "[output] _virtual/global.layer0.j.css": ".test-b-2 {
         --test-b: 2px
     }
     .test-b-3 {
@@ -41,14 +43,12 @@ it("supports filesystem content", async ({ expect }) => {
     /* TailwindCSS Base */
     /* TailwindCSS Base Backdrop */
     ",
-      "[output] _virtual/entry.js": "/* empty css                               */
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/entry.js"></script>
-      <link rel="stylesheet" crossorigin href="/_virtual/_tailwindcss.global.layer0.css">
+      <link rel="stylesheet" crossorigin href="/_virtual/global.layer0.j.css">
     </head>
       <body>
         Only for testing purposes.

@@ -5,7 +5,7 @@ import type { TestCase, TestOptions, TestResult, TestResultLog } from "./types";
 import { getDefaultTestOptions, redactProjectRoot } from "./utils";
 
 function isMTWId(id: string): boolean {
-  return id.includes("tailwindcss.") || id.includes("tailwindcss:");
+  return id.startsWith("\0tailwindcss/");
 }
 
 function replaceTailwindCSSBase(code: string): string {
