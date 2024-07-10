@@ -27,13 +27,21 @@ export default x + " test-u-2";
   ]);
 
   const modA =
-    files["[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"];
+    files[
+      "[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"
+    ];
   const modB =
-    files["[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline"];
+    files[
+      "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline"
+    ];
   const modX =
-    files["[intermediate] tailwindcss/__x00__test/x.js/module.layer2.l.css?inline"];
+    files[
+      "[intermediate] tailwindcss/__x00__test/x.js/module.layer2.l.css?inline"
+    ];
   const modEntry =
-    files["[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline"];
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline"
+    ];
 
   expect(modA).toContain(".test-u-1");
   expect(modA).not.toContain(".test-u-2");

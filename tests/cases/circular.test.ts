@@ -67,16 +67,24 @@ it("should handle circular dependencies with hoisted mode", async ({
   const { files } = await runBuild(TEST_INPUT_COMPONENTS);
 
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-1");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-2");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-3");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-9");
 
   expect(files).toMatchInlineSnapshot(`
@@ -236,19 +244,29 @@ it("should handle circular dependencies with module mode", async ({
   });
 
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline"
+    ]
   ).not.toContain(".test-");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"
+    ]
   ).toContain(".test-u-1");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/a.js/module.layer2.l.css?inline"
+    ]
   ).toContain(".test-u-9");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline"
+    ]
   ).toContain(".test-u-2");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/c.js/module.layer2.l.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/c.js/module.layer2.l.css?inline"
+    ]
   ).toContain(".test-u-3");
 
   expect(warnings).toHaveLength(0);

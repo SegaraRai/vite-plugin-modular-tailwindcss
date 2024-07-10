@@ -27,16 +27,24 @@ export default x + " test-c-2";
   ]);
 
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-1");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toContain(".test-c-2");
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).toMatch(/\.test-c-9/);
   expect(
-    files["[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"]
+    files[
+      "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline"
+    ]
   ).not.toMatch(/\.test-c-9.+\.test-c-9/);
 
   expect(files).toMatchInlineSnapshot(`
