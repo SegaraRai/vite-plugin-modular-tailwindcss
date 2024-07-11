@@ -31,6 +31,7 @@ export function toImportPath(stringifiedId: string, idInfo: IdInfo): string {
 
 export function parseId(
   { root }: ResolvedConfig,
+  delimiter: string,
   id: string
 ): readonly [sourceId: string | null, name: string] | null {
   if (!id.startsWith(PREFIX)) {
@@ -38,17 +39,17 @@ export function parseId(
   }
 
   const sliced = id.slice(PREFIX.length);
-  const name = sliced.match(/[^/]+$/)?.[0] ?? "";
-  if (!name) {
-    return null;
-  }
-
-  const sourceId = restoreSourceId(sliced.slice(0, -name.length - 1), root);
-  return [sourceId || null, name.replace(/\?.*$/, "")];
+  const name = sliced.split(delimiter).pop()!;
+  const sourceId =
+    sliced !== name
+      ? restoreSourceId(sliced.slice(0, -name.length - delimiter.length), root)
+      : null;
+  return [sourceId, name.replace(/\?.*$/, "")];
 }
 
 export function stringifyId(
   { root }: ResolvedConfig,
+  delimiter: string,
   sourceId: string | null,
   name: string
 ): string {
@@ -56,14 +57,22 @@ export function stringifyId(
     return `${PREFIX}${name}`;
   }
 
-  return `${PREFIX}${stringifySourceId(sourceId, root)}/${name}`;
+  return `${PREFIX}${stringifySourceId(sourceId, root)}${delimiter}${name}`;
 }
 
 export function createIdFunctions(
-  config: ResolvedConfig
+  config: ResolvedConfig,
+  delimiter = "/"
 ): CodegenFunctionsForId {
+  if (/^[a-z.]*$/i.test(delimiter) || /[\\?&#]/.test(delimiter)) {
+    throw new Error(
+      `Invalid delimiter: "${delimiter}". Parsing would be ambiguous.`
+    );
+  }
+
   return {
-    parseId: (id) => parseId(config, id),
-    stringifyId: (sourceId, name) => stringifyId(config, sourceId, name),
+    parseId: (id) => parseId(config, delimiter, id),
+    stringifyId: (sourceId, name) =>
+      stringifyId(config, delimiter, sourceId, name),
   };
 }
