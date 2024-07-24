@@ -6,8 +6,8 @@ export type CodegenFunctionsForId = Pick<
   "parseId" | "stringifyId"
 >;
 
-export interface TailwindModuleIdTop {
-  readonly mode: "top";
+export interface TailwindModuleIdEntry {
+  readonly mode: "entry";
   readonly extension: "js";
   readonly shallow: boolean;
   readonly inject: boolean;
@@ -49,13 +49,13 @@ export interface TailwindModuleIdModuleCSS {
 }
 
 export type TailwindModuleId =
-  | TailwindModuleIdTop
+  | TailwindModuleIdEntry
   | TailwindModuleIdGlobal
   | TailwindModuleIdHoisted
   | TailwindModuleIdModuleJS
   | TailwindModuleIdModuleCSS;
 
-const TOP_IMPORT_SPEC_RE = /[#?]tailwindcss(?:\/([^/]*))?$/;
+const ENTRY_IMPORT_SPEC_RE = /[#?]tailwindcss(?:\/([^/]*))?$/;
 
 export function resolveId(
   source: string,
@@ -66,7 +66,7 @@ export function resolveId(
     return source;
   }
 
-  const match = TOP_IMPORT_SPEC_RE.exec(source);
+  const match = ENTRY_IMPORT_SPEC_RE.exec(source);
   if (!match) {
     return;
   }
@@ -93,7 +93,7 @@ export function resolveId(
 
   return stringifyId(
     {
-      mode: "top",
+      mode: "entry",
       extension: "js",
       shallow,
       inject,
@@ -109,7 +109,7 @@ export async function resolveIdFromURL(
   resolveIdFromPath: (path: string) => string | Promise<string>,
   funcs: CodegenFunctionsForId
 ): Promise<string | undefined> {
-  const match = TOP_IMPORT_SPEC_RE.exec(url);
+  const match = ENTRY_IMPORT_SPEC_RE.exec(url);
   if (!match) {
     return;
   }
@@ -122,7 +122,7 @@ export async function resolveIdFromURL(
 
   return stringifyId(
     {
-      mode: "top",
+      mode: "entry",
       extension: "js",
       shallow,
       inject,
@@ -164,13 +164,13 @@ export function parseId(
     };
   }
 
-  const [, topSpecifier] = /^top\.([a-z]+)\.js/.exec(name) ?? [];
-  if (topSpecifier) {
-    const shallow = topSpecifier.includes("s");
-    const inject = topSpecifier.includes("j");
+  const [, entrySpecifier] = /^entry\.([a-z]+)\.js/.exec(name) ?? [];
+  if (entrySpecifier) {
+    const shallow = entrySpecifier.includes("s");
+    const inject = entrySpecifier.includes("j");
 
     return {
-      mode: "top",
+      mode: "entry",
       extension: "js",
       shallow,
       inject,
@@ -252,11 +252,11 @@ export function stringifyId(
   }
 
   switch (id.mode) {
-    case "top":
+    case "entry":
       if (inject !== id.inject) {
-        throw new Error("LogicError: inject specifier mismatch for top code");
+        throw new Error("LogicError: inject specifier mismatch for entry code");
       }
-      return stringifyId(id.source, `top.${spec}.js`);
+      return stringifyId(id.source, `entry.${spec}.js`);
 
     case "hoisted":
       return stringifyId(

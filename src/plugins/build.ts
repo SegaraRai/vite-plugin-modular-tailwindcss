@@ -133,7 +133,7 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
         if (
           !seenCircularDependencyWarning &&
           shouldWarnIfCircular &&
-          parsedId.mode === "top"
+          parsedId.mode === "entry"
         ) {
           if (await hasCircularDependencies(functions, parsedId.source)) {
             seenCircularDependencyWarning = true;

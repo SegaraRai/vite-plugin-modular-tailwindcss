@@ -26,7 +26,7 @@ it("supports filesystem content", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
     ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */

@@ -48,17 +48,17 @@ export default "test-u-2 test-c-2 test-b-2";
     export default s;
     ",
       "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline": "export default ".test-u-3 {\\n    --test-u: 3px\\n}\\n"",
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default ".test-c-1 {\\n    --test-c: 1px\\n}\\n.test-c-2 {\\n    --test-c: 2px\\n}\\n.test-c-3 {\\n    --test-c: 3px\\n}\\n"",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import m0 from "\\u0000tailwindcss/__x00__test/a.js/module.layer2.dl.js";
     import s from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default ".test-u-1 {\\n    --test-u: 1px\\n}\\n"",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
-    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
-    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
-    export default l0g + l1h + l2m;
-    ",
       "[intermediate] tailwindcss/global.layer0.l.css?inline": "export default ".test-b-1 {\\n    --test-b: 1px\\n}\\n.test-b-2 {\\n    --test-b: 2px\\n}\\n.test-b-3 {\\n    --test-b: 3px\\n}\\n/* TailwindCSS Base */\\n/* TailwindCSS Base Backdrop */\\n"",
       "[output] _virtual/a.js": "import "./b.js";
     const a = "test-u-2 test-c-2 test-b-2";
@@ -68,7 +68,15 @@ export default "test-u-2 test-c-2 test-b-2";
     ",
       "[output] _virtual/b.js": "console.log("test-u-3 test-c-3 test-b-3");
     ",
-      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+      "[output] _virtual/entry.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import l2m from "./module.layer2.dl.js";
+    const css = l0g + l1h + l2m;
+    export {
+      css as default
+    };
+    ",
+      "[output] _virtual/entry.js": "import css from "./entry.dl.js";
     import a from "./a.js";
     const X = "test-u-1 test-c-1 test-b-1";
     console.log(X, a, css);
@@ -117,14 +125,6 @@ export default "test-u-2 test-c-2 test-b-2";
       s as default
     };
     ",
-      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
-    import l1h from "./hoisted.layer1.dl.css.js";
-    import l2m from "./module.layer2.dl.js";
-    const css = l0g + l1h + l2m;
-    export {
-      css as default
-    };
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
@@ -136,7 +136,7 @@ export default "test-u-2 test-c-2 test-b-2";
       <script type="module" crossorigin src="/_virtual/module.layer2.dl2.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.dl.js"></script>
-      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
+      <script type="module" crossorigin src="/_virtual/entry.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/b.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js"></script>
       <script type="module" crossorigin src="/_virtual/entry.js"></script>
@@ -194,15 +194,15 @@ export default "test-u-2 test-c-2 test-b-2";
       "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/b.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.j.css": "",
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/a.js/module.layer2.dj.js";
     import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/a.js": "import "./b.js";
     const a = "test-u-2 test-c-2 test-b-2";

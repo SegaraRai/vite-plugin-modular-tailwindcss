@@ -3,7 +3,7 @@ import type { ContentSpec, Layer, LayerMode } from "../options";
 import type { createTailwindCSSGenerator } from "../tailwindcss";
 import { assertsNever } from "../utils";
 import type { CodegenContext } from "./context";
-import { generateModuleJSCode, generateTopJSCode } from "./js";
+import { generateEntryJSCode, generateModuleJSCode } from "./js";
 import {
   getFilteredModuleImportsRecursive,
   waitAndResolveAllModuleIds,
@@ -54,13 +54,13 @@ export async function generateCode(
   const { warn } = functions;
 
   switch (mode) {
-    case "top": {
-      const topJSCode = await generateTopJSCode(
+    case "entry": {
+      const entryJSCode = await generateEntryJSCode(
         parsedId,
         codegenContext,
         skipLayer
       );
-      return [topJSCode, parsedId.inject];
+      return [entryJSCode, parsedId.inject];
     }
 
     case "module": {

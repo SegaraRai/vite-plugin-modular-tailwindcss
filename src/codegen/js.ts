@@ -1,8 +1,8 @@
 import {
   stringifyId,
   type TailwindModuleId,
+  type TailwindModuleIdEntry,
   type TailwindModuleIdModuleJS,
-  type TailwindModuleIdTop,
 } from "../id";
 import type { Layer } from "../options";
 import { assertsNever } from "../utils";
@@ -62,8 +62,8 @@ function createImportCodegen(inject: boolean, functions: CodegenFunctions) {
   };
 }
 
-export async function generateTopJSCode(
-  { source, inject, shallow }: TailwindModuleIdTop,
+export async function generateEntryJSCode(
+  { source, inject, shallow }: TailwindModuleIdEntry,
   { functions, options: { allowCircularModules, layers } }: CodegenContext,
   skipLayer: (layer: Layer, layerIndex: number) => boolean
 ): Promise<string> {

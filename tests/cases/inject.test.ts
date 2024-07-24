@@ -19,14 +19,14 @@ it("generates inject css with no used classes", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */
     import "./hoisted.layer1.dj.css.js";
@@ -79,14 +79,14 @@ it("generates inject css with an utility class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */
     import "./hoisted.layer1.dj.css.js";
@@ -141,14 +141,14 @@ it("generates inject css with an component class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */
     /* empty css                      */
@@ -203,14 +203,14 @@ it("generates inject css with an base class", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */
     import "./hoisted.layer1.dj.css.js";
@@ -266,14 +266,14 @@ it("generates inject css with all layers", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dj.js": "import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
       "[output] _virtual/entry.js": "/* empty css                    */
     /* empty css                      */

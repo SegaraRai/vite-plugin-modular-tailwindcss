@@ -47,6 +47,11 @@ export default x + " test-b-2";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss/__x00__test/b.js/module.layer2.l.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default """,
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import m0 from "\\u0000tailwindcss/__x00__test/a.js/module.layer2.dl.js";
     import m1 from "\\u0000tailwindcss/__x00__test/b.js/module.layer2.dl.js";
@@ -54,11 +59,6 @@ export default x + " test-b-2";
     export default m0 + m1 + s;
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default """,
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
-    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
-    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
-    export default l0g + l1h + l2m;
-    ",
       "[intermediate] tailwindcss/__x00__test/x.js/module.layer2.dl.js": "import s from "\\u0000tailwindcss/__x00__test/x.js/module.layer2.l.css?inline";
     export default s;
     ",
@@ -76,7 +76,15 @@ export default x + " test-b-2";
       b as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+      "[output] _virtual/entry.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import l2m from "./module.layer2.dl.js";
+    const css = l0g + l1h + l2m;
+    export {
+      css as default
+    };
+    ",
+      "[output] _virtual/entry.js": "import css from "./entry.dl.js";
     import a from "./a.js";
     import b from "./b.js";
     console.log(a, b, css);
@@ -138,14 +146,6 @@ export default x + " test-b-2";
       s as default
     };
     ",
-      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
-    import l1h from "./hoisted.layer1.dl.css.js";
-    import l2m from "./module.layer2.dl.js";
-    const css = l0g + l1h + l2m;
-    export {
-      css as default
-    };
-    ",
       "[output] _virtual/x.js": "const x = "test-b-9";
     export {
       x as default
@@ -164,7 +164,7 @@ export default x + " test-b-2";
       <script type="module" crossorigin src="/_virtual/module.layer2.dl3.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.dl.js"></script>
-      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
+      <script type="module" crossorigin src="/_virtual/entry.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/x.js"></script>
       <script type="module" crossorigin src="/_virtual/a.js"></script>
       <script type="module" crossorigin src="/_virtual/b.js"></script>
@@ -191,15 +191,19 @@ it("creates css for loaded modules without entry js", async ({ expect }) => {
 
   expect(files).toMatchInlineSnapshot(`
     {
+      "[intermediate] tailwindcss/@@/tests/entry.html/entry.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
+    import "\\u0000tailwindcss/@@/tests/entry.html/hoisted.layer1.dj.css";
+    import "\\u0000tailwindcss/@@/tests/entry.html/module.layer2.dj.js";
+    ",
       "[intermediate] tailwindcss/@@/tests/entry.html/hoisted.layer1.dj.css": "",
       "[intermediate] tailwindcss/@@/tests/entry.html/module.layer2.dj.js": "import "\\u0000tailwindcss/@@/tests/entry.html/module.layer2.j.css";
     ",
       "[intermediate] tailwindcss/@@/tests/entry.html/module.layer2.j.css": "",
-      "[intermediate] tailwindcss/@@/tests/entry.html/top.dj.js": "import "\\u0000tailwindcss/global.layer0.j.css";
-    import "\\u0000tailwindcss/@@/tests/entry.html/hoisted.layer1.dj.css";
-    import "\\u0000tailwindcss/@@/tests/entry.html/module.layer2.dj.js";
-    ",
       "[intermediate] tailwindcss/global.layer0.j.css": "",
+      "[output] _virtual/entry.dj.js": "/* empty css                    */
+    import "./hoisted.layer1.dj.css.js";
+    import "./module.layer2.j.css.js";
+    ",
       "[output] _virtual/global.layer0.j.css": ".test-b-5 {
         --test-b: 5px
     }
@@ -210,17 +214,13 @@ it("creates css for loaded modules without entry js", async ({ expect }) => {
     ",
       "[output] _virtual/module.layer2.j.css.js": "
     ",
-      "[output] _virtual/top.dj.js": "/* empty css                    */
-    import "./hoisted.layer1.dj.css.js";
-    import "./module.layer2.j.css.js";
-    ",
       "[output] tests/entry.html": "<!doctype html>
     <html lang="en">
       <head>
         <meta charset="UTF-8" />
         <title>Test Entry File</title>  <script type="module" crossorigin src="/_virtual/hoisted.layer1.dj.css.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.j.css.js"></script>
-      <script type="module" crossorigin src="/_virtual/top.dj.js"></script>
+      <script type="module" crossorigin src="/_virtual/entry.dj.js"></script>
       <link rel="stylesheet" crossorigin href="/_virtual/global.layer0.j.css">
     </head>
       <body>
@@ -288,6 +288,11 @@ export default "test-b-5";
     export default m0 + s;
     ",
       "[intermediate] tailwindcss/__x00__test/b-l1800.js/module.layer2.l.css?inline": "export default """,
+      "[intermediate] tailwindcss/__x00__test/entry.js/entry.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
+    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
+    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
+    export default l0g + l1h + l2m;
+    ",
       "[intermediate] tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline": "export default """,
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.dl.js": "import m0 from "\\u0000tailwindcss/__x00__test/a-l800.js/module.layer2.dl.js";
     import m1 from "\\u0000tailwindcss/__x00__test/b-l1800.js/module.layer2.dl.js";
@@ -296,11 +301,6 @@ export default "test-b-5";
     export default m0 + m1 + m2 + s;
     ",
       "[intermediate] tailwindcss/__x00__test/entry.js/module.layer2.l.css?inline": "export default """,
-      "[intermediate] tailwindcss/__x00__test/entry.js/top.dl.js": "import l0g from "\\u0000tailwindcss/global.layer0.l.css?inline";
-    import l1h from "\\u0000tailwindcss/__x00__test/entry.js/hoisted.layer1.dl.css?inline";
-    import l2m from "\\u0000tailwindcss/__x00__test/entry.js/module.layer2.dl.js";
-    export default l0g + l1h + l2m;
-    ",
       "[intermediate] tailwindcss/__x00__test/p-l5000.js/module.layer2.dl.js": "import m0 from "\\u0000tailwindcss/__x00__test/q-l8000.js/module.layer2.dl.js";
     import s from "\\u0000tailwindcss/__x00__test/p-l5000.js/module.layer2.l.css?inline";
     export default m0 + s;
@@ -327,7 +327,15 @@ export default "test-b-5";
       b as default
     };
     ",
-      "[output] _virtual/entry.js": "import css from "./top.dl.js";
+      "[output] _virtual/entry.dl.js": "import l0g from "./global.layer0.l.css.js";
+    import l1h from "./hoisted.layer1.dl.css.js";
+    import l2m from "./module.layer2.dl.js";
+    const css = l0g + l1h + l2m;
+    export {
+      css as default
+    };
+    ",
+      "[output] _virtual/entry.js": "import css from "./entry.dl.js";
     import a from "./a-l800.js";
     import b from "./b-l1800.js";
     import p from "./p-l5000.js";
@@ -418,14 +426,6 @@ export default "test-b-5";
       p as default
     };
     ",
-      "[output] _virtual/top.dl.js": "import l0g from "./global.layer0.l.css.js";
-    import l1h from "./hoisted.layer1.dl.css.js";
-    import l2m from "./module.layer2.dl.js";
-    const css = l0g + l1h + l2m;
-    export {
-      css as default
-    };
-    ",
       "[output] _virtual/x-l3000.js": "const x = "test-b-9";
     export {
       x as default
@@ -447,7 +447,7 @@ export default "test-b-5";
       <script type="module" crossorigin src="/_virtual/module.layer2.dl4.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.l.css.js"></script>
       <script type="module" crossorigin src="/_virtual/module.layer2.dl.js"></script>
-      <script type="module" crossorigin src="/_virtual/top.dl.js"></script>
+      <script type="module" crossorigin src="/_virtual/entry.dl.js"></script>
       <script type="module" crossorigin src="/_virtual/x-l3000.js"></script>
       <script type="module" crossorigin src="/_virtual/a-l800.js"></script>
       <script type="module" crossorigin src="/_virtual/b-l1800.js"></script>

@@ -119,7 +119,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
           return;
         }
 
-        if (parsedId.mode !== "top") {
+        if (parsedId.mode !== "entry") {
           throw new Error(
             `LogicError: ${parsedId.mode} code is not available in dev mode.`
           );
