@@ -21,11 +21,11 @@ export const DEFAULT_VITE_ID_OPTIONS = {
 
 function stringifySourceId(id: string, root: string): string {
   const normalizedId = normalizePath(id);
-  if (normalizedId === root) {
-    return RELATIVE_PREFIX.slice(0, -1);
+  if (normalizedId === root || normalizedId === root + "/") {
+    return RELATIVE_PREFIX;
   }
 
-  const shortened = normalizePath(id).startsWith(root + "/")
+  const shortened = normalizedId.startsWith(root + "/")
     ? (RELATIVE_PREFIX + id.slice(root.length + 1)).replace(/\/$/, "")
     : id;
   return shortened.replaceAll("\0", "__x00__");
@@ -74,7 +74,11 @@ export function stringifyId(
     return `${PREFIX}${filenamePrefix}${name}`;
   }
 
-  return `${PREFIX}${stringifySourceId(sourceId, root)}${delimiter}${filenamePrefix}${name}`;
+  const stringifiedSourceId = stringifySourceId(sourceId, root);
+  const normalizedDelimiter = stringifiedSourceId.endsWith("/")
+    ? delimiter.replace(/^\//, "")
+    : delimiter;
+  return `${PREFIX}${stringifiedSourceId}${normalizedDelimiter}${filenamePrefix}${name}`;
 }
 
 export function createIdFunctions(
