@@ -6,7 +6,5 @@ document.querySelector("#virtual")!.className = cls;
 document.querySelector("#code")!.textContent = Array.from(
   style.matchAll(/\.[\w-]+(?=\s*\{)/g)
 )
-  .map((match) => match[0])
-  // FIXME: This is accidentally included in our virtual module name.
-  .filter((cls) => cls !== ".inl" + "ine")
+  .map(([match]) => match)
   .join(" ");
