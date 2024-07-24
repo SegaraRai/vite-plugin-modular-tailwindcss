@@ -20,17 +20,17 @@
   },
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.8.1",
-    "@fontsource/inter": "^5.0.18",
+    "@fontsource/inter": "^5.0.19",
     "@iconify-json/zondicons": "^1.1.8",
-    "@playwright/test": "^1.45.0",
-    "@types/node": "^20.14.9",
+    "@playwright/test": "^1.45.3",
+    "@types/node": "^20.14.12",
     "autoprefixer": "^10.4.19",
     "cross-env": "^7.0.3",
     "lit-analyzer": "^2.0.3",
-    "playwright": "^1.45.0",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.5.2",
-    "vite": "^5.3.2",
+    "playwright": "^1.45.3",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.4",
     "vite-plugin-modular-tailwindcss": "workspace:*"
   }
 }
