@@ -1,9 +1,9 @@
 import type { PluginOption } from "vite";
-import type { Options } from "../src";
+import type { ViteOptions } from "../src";
 
 export type TestCase = [filename: string, content: string][];
 
-export interface TestOptions extends Options {
+export interface TestOptions extends ViteOptions {
   head?: string;
   body?: string;
   noPreserveModules?: boolean;

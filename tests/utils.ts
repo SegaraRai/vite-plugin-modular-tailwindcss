@@ -41,6 +41,10 @@ const DEFAULT_TEST_OPTIONS: TestOptions = {
   excludes: [],
   globCWD: fromProjectRoot("./tests"),
   allowCircularModules: false,
+  idOptions: {
+    delimiter: "/",
+    filenamePrefix: "",
+  },
   // test options
   head: DEFAULT_HEAD,
   body: "",
