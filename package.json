@@ -39,7 +39,7 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "pnpm --filter *playground dev",
     "build": "vite build && tsc -b",
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
