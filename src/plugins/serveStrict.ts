@@ -13,8 +13,12 @@ import {
   type CodegenFunctions,
 } from "../codegen";
 import { fwVite } from "../frameworks";
+import {
+  DEFAULT_VITE_ID_OPTIONS,
+  type ResolvedViteIdOptions,
+} from "../frameworks/vite";
 import { parseId, resolveId, resolveIdFromURL } from "../id";
-import { resolveOptions, type Options, type ResolvedOptions } from "../options";
+import { resolveOptions, type ResolvedOptions } from "../options";
 import { createTailwindCSSGenerator } from "../tailwindcss";
 import {
   getModuleIdFromURLPath,
@@ -23,6 +27,7 @@ import {
   shouldExclude,
   type PluginContext,
 } from "../utils";
+import type { ViteOptions } from "./types";
 
 function decodeHTMLAttributeURL(code: string): string {
   return decodeURIComponent(
@@ -77,6 +82,7 @@ function createCodegenFunctions(
   pluginContext: PluginContext,
   server: ViteDevServer,
   resolvedConfig: ResolvedConfig,
+  resolvedIdOptions: ResolvedViteIdOptions,
   resolvedOptions: ResolvedOptions,
   htmlMap: ReadonlyMap<string, string>
 ): CodegenFunctions {
@@ -159,7 +165,7 @@ function createCodegenFunctions(
     warn: (message: string): void => {
       pluginContext.warn(message);
     },
-    ...fwVite.createIdFunctions(resolvedConfig),
+    ...fwVite.createIdFunctions(resolvedIdOptions),
   };
 }
 
@@ -174,7 +180,9 @@ function createCodegenFunctions(
  * This plugin utilizes the native PostCSS / TailwindCSS support in Vite.
  * To make this plugin work, you need to configure the `postcss.config.js` and `tailwind.config.js` files.
  */
-export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
+export function modularTailwindCSSPluginServeStrict(
+  options: ViteOptions
+): Plugin {
   const htmlMap = new Map<string, string>();
   let seenCircularDependencyWarning = false;
 
@@ -192,6 +200,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
   const getCodegenContext = (
     pluginContext: PluginContext,
     resolvedConfig: ResolvedConfig,
+    resolvedIdOptions: ResolvedViteIdOptions,
     server: ViteDevServer
   ) => {
     let codegenContext = codegenContextWeakMap.get(pluginContext);
@@ -202,6 +211,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
           pluginContext,
           server,
           resolvedConfig,
+          resolvedIdOptions,
           resolvedOptions,
           htmlMap
         ),
@@ -213,6 +223,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
   };
 
   let resolvedConfig: ResolvedConfig | undefined;
+  let resolvedIdOptions: ResolvedViteIdOptions | undefined;
   let storedServer: ViteDevServer | undefined;
 
   return {
@@ -221,6 +232,11 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     enforce: "pre",
     configResolved(config): void {
       resolvedConfig = config;
+      resolvedIdOptions = {
+        ...DEFAULT_VITE_ID_OPTIONS,
+        ...options.idOptions,
+        root: config.root,
+      };
     },
     configureServer(server): void {
       storedServer = server;
@@ -228,7 +244,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
       // Redirect to enable importing `?tailwindcss/inject` and `?tailwindcss/inject-shallow` from HTML.
       server.middlewares.use((req, res, next): void => {
         (async (): Promise<void> => {
-          if (!resolvedConfig) {
+          if (!resolvedConfig || !resolvedIdOptions) {
             next();
             return;
           }
@@ -237,7 +253,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
             req.url ?? "",
             (path: string): string =>
               join(`${resolvedConfig!.root}/`, path.slice(1)),
-            fwVite.createIdFunctions(resolvedConfig)
+            fwVite.createIdFunctions(resolvedIdOptions)
           );
           if (!resolvedId) {
             next();
@@ -265,7 +281,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        if (!resolvedConfig) {
+        if (!resolvedConfig || !resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
 
@@ -276,6 +292,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
         const { functions } = getCodegenContext(
           this,
           resolvedConfig,
+          resolvedIdOptions,
           storedServer
         );
         return resolveId(source, importer, functions);
@@ -284,7 +301,7 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
     load: {
       order: "pre",
       async handler(resolvedId) {
-        if (!resolvedConfig) {
+        if (!resolvedConfig || !resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
         const { root } = resolvedConfig;
@@ -294,7 +311,12 @@ export function modularTailwindCSSPluginServeStrict(options: Options): Plugin {
           throw new Error("LogicError: No server.");
         }
 
-        const codegenContext = getCodegenContext(this, resolvedConfig, server);
+        const codegenContext = getCodegenContext(
+          this,
+          resolvedConfig,
+          resolvedIdOptions,
+          server
+        );
         const { functions } = codegenContext;
 
         const parsedId = parseId(resolvedId, functions);

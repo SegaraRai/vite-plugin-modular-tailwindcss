@@ -1,12 +1,17 @@
 import type { Plugin, ResolvedConfig } from "vite";
 import { fwVite } from "../frameworks";
+import {
+  DEFAULT_VITE_ID_OPTIONS,
+  type ResolvedViteIdOptions,
+} from "../frameworks/vite";
 import { parseId, resolveId, resolveIdFromURL } from "../id";
-import { resolveOptions, type Options } from "../options";
+import { resolveOptions } from "../options";
 import {
   getIndexHTMLModuleId,
   getModuleIdFromURLPath,
   getURLPathFromModuleId,
 } from "../utils";
+import type { ViteOptions } from "./types";
 
 const DEV_GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
 
@@ -21,7 +26,9 @@ const DEV_GLOBAL_TAILWIND_CSS_ID = "tailwindcss.dev.global.css";
  * This plugin utilizes the native PostCSS / TailwindCSS support in Vite.
  * To make this plugin work, you need to configure the `postcss.config.js` and `tailwind.config.js` files.
  */
-export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
+export function modularTailwindCSSPluginServeLite(
+  options: ViteOptions
+): Plugin {
   const resolvedOptions = resolveOptions(options);
   const globalCSSCode = resolvedOptions.layers
     .filter((layer) => layer.apply !== "build")
@@ -30,18 +37,24 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
 
   let seenFirstMessage = false;
   let resolvedConfig: ResolvedConfig | undefined;
+  let resolvedIdOptions: ResolvedViteIdOptions | undefined;
 
   return {
     name: "vite-plugin-modular-tailwindcss-serve",
     apply: "serve",
     configResolved(config): void {
       resolvedConfig = config;
+      resolvedIdOptions = {
+        ...DEFAULT_VITE_ID_OPTIONS,
+        ...options.idOptions,
+        root: config.root,
+      };
     },
     configureServer(server): void {
       // Redirect to enable importing `?tailwindcss/inject` and `?tailwindcss/inject-shallow` from HTML.
       server.middlewares.use((req, res, next): void => {
         (async (): Promise<void> => {
-          if (!resolvedConfig) {
+          if (!resolvedConfig || !resolvedIdOptions) {
             next();
             return;
           }
@@ -53,7 +66,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
               (await (resolvedConfig
                 ? getIndexHTMLModuleId(resolvedConfig)
                 : Promise.reject(new Error("No resolved config.")))),
-            fwVite.createIdFunctions(resolvedConfig)
+            fwVite.createIdFunctions(resolvedIdOptions)
           );
           if (!resolvedId) {
             next();
@@ -86,14 +99,14 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
           return source;
         }
 
-        if (!resolvedConfig) {
+        if (!resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
 
         return resolveId(
           source,
           importer,
-          fwVite.createIdFunctions(resolvedConfig)
+          fwVite.createIdFunctions(resolvedIdOptions)
         );
       },
     },
@@ -107,13 +120,13 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
           };
         }
 
-        if (!resolvedConfig) {
+        if (!resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
 
         const parsedId = parseId(
           resolvedId,
-          fwVite.createIdFunctions(resolvedConfig)
+          fwVite.createIdFunctions(resolvedIdOptions)
         );
         if (!parsedId) {
           return;
@@ -121,7 +134,7 @@ export function modularTailwindCSSPluginServeLite(options: Options): Plugin {
 
         if (parsedId.mode !== "entry") {
           throw new Error(
-            `LogicError: ${parsedId.mode} code is not available in dev mode.`
+            `LogicError: ${parsedId.mode} code is not available in the lite plugin.`
           );
         }
 

@@ -1,9 +1,23 @@
-import { normalizePath, type ResolvedConfig } from "vite";
+import { normalizePath } from "vite";
 import type { IdInfo } from "../../codegen";
 import type { CodegenFunctionsForId } from "../../id";
 
+export interface ViteIdOptions {
+  readonly delimiter?: string | undefined;
+  readonly filenamePrefix?: string | undefined;
+}
+
+export interface ResolvedViteIdOptions extends Required<ViteIdOptions> {
+  readonly root: string;
+}
+
 const PREFIX = "\0tailwindcss/";
 const RELATIVE_PREFIX = "@@/";
+
+export const DEFAULT_VITE_ID_OPTIONS = {
+  delimiter: "/",
+  filenamePrefix: "mtw.",
+} as const satisfies Required<ViteIdOptions>;
 
 function stringifySourceId(id: string, root: string): string {
   const normalizedId = normalizePath(id);
@@ -30,8 +44,7 @@ export function toImportPath(stringifiedId: string, idInfo: IdInfo): string {
 }
 
 export function parseId(
-  { root }: ResolvedConfig,
-  delimiter: string,
+  { root, delimiter, filenamePrefix }: ResolvedViteIdOptions,
   id: string
 ): readonly [sourceId: string | null, name: string] | null {
   if (!id.startsWith(PREFIX)) {
@@ -44,26 +57,30 @@ export function parseId(
     sliced !== name
       ? restoreSourceId(sliced.slice(0, -name.length - delimiter.length), root)
       : null;
-  return [sourceId, name.replace(/\?.*$/, "")];
+  if (!name.startsWith(filenamePrefix)) {
+    throw new Error(
+      `LogicError: Invalid ID: "${id}". Expected name to start with "${filenamePrefix}"`
+    );
+  }
+  return [sourceId, name.slice(filenamePrefix.length).replace(/\?.*$/, "")];
 }
 
 export function stringifyId(
-  { root }: ResolvedConfig,
-  delimiter: string,
+  { root, delimiter, filenamePrefix }: ResolvedViteIdOptions,
   sourceId: string | null,
   name: string
 ): string {
   if (!sourceId) {
-    return `${PREFIX}${name}`;
+    return `${PREFIX}${filenamePrefix}${name}`;
   }
 
-  return `${PREFIX}${stringifySourceId(sourceId, root)}${delimiter}${name}`;
+  return `${PREFIX}${stringifySourceId(sourceId, root)}${delimiter}${filenamePrefix}${name}`;
 }
 
 export function createIdFunctions(
-  config: ResolvedConfig,
-  delimiter = "/"
+  options: ResolvedViteIdOptions
 ): CodegenFunctionsForId {
+  const { delimiter } = options;
   if (/^[a-z.]*$/i.test(delimiter) || /[\\?&#]/.test(delimiter)) {
     throw new Error(
       `Invalid delimiter: "${delimiter}". Parsing would be ambiguous.`
@@ -71,8 +88,7 @@ export function createIdFunctions(
   }
 
   return {
-    parseId: (id) => parseId(config, delimiter, id),
-    stringifyId: (sourceId, name) =>
-      stringifyId(config, delimiter, sourceId, name),
+    parseId: (id) => parseId(options, id),
+    stringifyId: (sourceId, name) => stringifyId(options, sourceId, name),
   };
 }

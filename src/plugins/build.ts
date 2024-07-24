@@ -1,4 +1,4 @@
-import { normalizePath, type Plugin, type ResolvedConfig } from "vite";
+import { normalizePath, type Plugin } from "vite";
 import {
   generateCode,
   hasCircularDependencies,
@@ -6,8 +6,12 @@ import {
   type CodegenFunctions,
 } from "../codegen";
 import { fwVite } from "../frameworks";
+import {
+  DEFAULT_VITE_ID_OPTIONS,
+  type ResolvedViteIdOptions,
+} from "../frameworks/vite";
 import { parseId, resolveId } from "../id";
-import { resolveOptions, type Options, type ResolvedOptions } from "../options";
+import { resolveOptions, type ResolvedOptions } from "../options";
 import { createTailwindCSSGenerator } from "../tailwindcss";
 import {
   getModuleCode,
@@ -15,6 +19,7 @@ import {
   shouldExclude,
   type PluginContext,
 } from "../utils";
+import type { ViteOptions } from "./types";
 
 // for documentation links
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,7 +28,7 @@ import type { modularTailwindCSSPluginServeStrict } from "./serveStrict";
 function createCodegenFunctions(
   resolvedOptions: ResolvedOptions,
   pluginContext: PluginContext,
-  resolvedConfig: ResolvedConfig
+  idOptions: ResolvedViteIdOptions
 ): CodegenFunctions {
   return {
     shouldIncludeImport: (
@@ -39,7 +44,7 @@ function createCodegenFunctions(
     ) => getModuleImports(pluginContext, resolvedId, importerId ?? undefined),
     toImportPath: fwVite.toImportPath,
     warn: pluginContext.warn.bind(pluginContext),
-    ...fwVite.createIdFunctions(resolvedConfig),
+    ...fwVite.createIdFunctions(idOptions),
   };
 }
 
@@ -51,7 +56,7 @@ function createCodegenFunctions(
  * We require `importedIds` and `code` to generate TailwindCSS code, but they are not available in serve mode.
  * Use {@link modularTailwindCSSPluginServeStrict} for serve mode.
  */
-export function modularTailwindCSSPluginBuild(options: Options): Plugin {
+export function modularTailwindCSSPluginBuild(options: ViteOptions): Plugin {
   const htmlMap = new Map<string, string>();
   let seenCircularDependencyWarning = false;
 
@@ -68,7 +73,7 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
   const codegenContextWeakMap = new WeakMap<PluginContext, CodegenContext>();
   const getCodegenContext = (
     pluginContext: PluginContext,
-    resolvedConfig: ResolvedConfig
+    resolvedIdOptions: ResolvedViteIdOptions
   ) => {
     let codegenContext = codegenContextWeakMap.get(pluginContext);
     if (!codegenContext) {
@@ -77,7 +82,7 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
         functions: createCodegenFunctions(
           resolvedOptions,
           pluginContext,
-          resolvedConfig
+          resolvedIdOptions
         ),
       };
       codegenContextWeakMap.set(pluginContext, codegenContext);
@@ -86,14 +91,18 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     return codegenContext;
   };
 
-  let resolvedConfig: ResolvedConfig | undefined;
+  let resolvedIdOptions: ResolvedViteIdOptions | undefined;
 
   return {
     name: "vite-plugin-modular-tailwindcss-build",
     apply: "build",
     enforce: "pre",
     configResolved(config): void {
-      resolvedConfig = config;
+      resolvedIdOptions = {
+        ...DEFAULT_VITE_ID_OPTIONS,
+        ...options.idOptions,
+        root: config.root,
+      };
     },
     buildStart(): void {
       htmlMap.clear();
@@ -107,22 +116,22 @@ export function modularTailwindCSSPluginBuild(options: Options): Plugin {
     resolveId: {
       order: "pre",
       handler(source, importer): string | undefined {
-        if (!resolvedConfig) {
+        if (!resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
 
-        const { functions } = getCodegenContext(this, resolvedConfig);
+        const { functions } = getCodegenContext(this, resolvedIdOptions);
         return resolveId(source, importer, functions);
       },
     },
     load: {
       order: "pre",
       async handler(resolvedId) {
-        if (!resolvedConfig) {
+        if (!resolvedIdOptions) {
           throw new Error("LogicError: No resolved config.");
         }
 
-        const codegenContext = getCodegenContext(this, resolvedConfig);
+        const codegenContext = getCodegenContext(this, resolvedIdOptions);
         const { functions } = codegenContext;
 
         const parsedId = parseId(resolvedId, functions);
