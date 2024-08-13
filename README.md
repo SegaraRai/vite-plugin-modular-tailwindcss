@@ -215,9 +215,7 @@ If the module importing `#tailwindcss` or `#tailwindcss/inject` has no circular 
 If circular dependencies do exist, the necessary action depends on the layer mode you're using:
 
 - **Global or Hoisted Mode**: Dependencies are resolved at build time, so no action is needed.
-- \*\*
-
-Module Mode\*\*: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
+- \*\*Module Mode\*\*: Dependencies are resolved at runtime, which may lead to a `ReferenceError`.
 
 Even one layer in `module` mode (which is the default configuration) can cause this issue.
 To address circular dependency issues in module mode, set the `allowCircularModules` option to `true`.
