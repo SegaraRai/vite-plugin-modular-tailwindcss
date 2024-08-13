@@ -43,8 +43,8 @@
     "build": "vite build && tsc -b",
     "lint": "eslint . && prettier -c .",
     "test": "vitest",
-    "changesets-version": "changesets version && pnpm i --lockfile-only",
-    "changesets-publish": "pnpm publish -r && git push --follow-tags"
+    "changeset-version": "pnpm changeset version",
+    "changeset-publish": "pnpm publish -r && git push --follow-tags"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.7",
