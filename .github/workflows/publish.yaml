@@ -51,21 +51,23 @@ jobs:
           pnpm test
           docker compose down
 
-      - name: Get Next Package Version
-        id: version
-        run: |
-          echo "PACKAGE_RELEASE_VERSION=$(pnpm --silent next-version)" >> "$GITHUB_OUTPUT"
-
       - name: Create Release Pull Request or Publish to npm
+        id: changesets
         uses: changesets/action@v1
         with:
-          title: "Release v${{ steps.version.outputs.PACKAGE_RELEASE_VERSION }}"
-          commit: "release: v${{ steps.version.outputs.PACKAGE_RELEASE_VERSION }}"
-          publish: pnpm tag-and-publish
+          version: pnpm changesets-version
+          publish: pnpm changesets-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
+
+      - name: Update Release PR
+        if: steps.changesets.outputs.pullRequestNumber != ''
+        continue-on-error: true
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          gh pr edit "${{ steps.changesets.outputs.pullRequestNumber }}" --title "Release v$VERSION" --add-label release
 
       - name: Upload Test Results if VRT failed
         if: failure()
