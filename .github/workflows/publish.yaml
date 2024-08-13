@@ -68,6 +68,8 @@ jobs:
         run: |
           VERSION=$(jq -r '.version' package.json)
           gh pr edit "${{ steps.changesets.outputs.pullRequestNumber }}" --title "Release v$VERSION" --add-label release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Test Results if VRT failed
         if: failure()
