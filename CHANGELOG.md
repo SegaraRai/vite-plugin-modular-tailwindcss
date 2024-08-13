@@ -1,5 +1,17 @@
 # vite-plugin-modular-tailwindcss
 
+## 0.4.0
+
+### Minor Changes
+
+- 42bcae0: New strict version for serve plugin
+
+### Patch Changes
+
+- 10d6a4d: Use relative paths for virtual module ids.
+- 6c2d028: Allow changing the delimiter and filename prefix.
+  Now the virtual modules are prefixed with "mtw." by default.
+
 ## 0.3.0
 
 ### Minor Changes
